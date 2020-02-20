@@ -143,9 +143,10 @@ class AutoLevelWidget extends PureComponent {
             let dx = (this.state.endX - this.state.startX) / parseInt((this.state.endX - this.state.startX) / this.state.stepX, 10);
             let dy = (this.state.endY - this.state.startY) / parseInt((this.state.endY - this.state.startY) / this.state.stepY, 10);
             code.push('(AL: probing initial point)\n');
+            code.push(`G0 Z${this.state.height}\n`);
             code.push(`G90 G0 X${this.state.startX.toFixed(3)} Y${this.state.startY.toFixed(3)} Z${this.state.height}\n`);
             code.push(`G38.2 Z-${this.state.depth} F${this.state.feedZ / 2}\n`);
-            code.push('G10 L20 P1 Z0\n'); // set the z zero
+            //code.push('G10 L20 P1 Z0\n'); // set the z zero
             code.push(`G0 Z${this.state.height}\n`);
             let y = this.state.startY - dy;
             while (y < this.state.endY - 0.01) {
@@ -268,11 +269,34 @@ class AutoLevelWidget extends PureComponent {
         this.removeControllerEvents();
     }
     componentDidUpdate(prevProps, prevState) {
+        log.log(INFO, 'AutoLevel/index.jsx componentDidUpdate');
         const {
             minimized
         } = this.state;
-
         this.config.set('minimized', minimized);
+
+        let {
+            startX,
+            endX,
+            startY,
+            endY,
+            stepX,
+            stepY,
+            feedXY,
+            feedZ,
+            depth,
+            height
+        } = this.state;
+        this.config.set('startX', Number(startX));
+        this.config.set('endX', Number(endX));
+        this.config.set('startY', Number(startY));
+        this.config.set('endY', Number(endY));
+        this.config.set('stepX', Number(stepX));
+        this.config.set('stepY', Number(stepY));
+        this.config.set('feedXY', Number(feedXY));
+        this.config.set('feedZ', Number(feedZ));
+        this.config.set('depth', Number(depth));
+        this.config.set('height', Number(height));
     }
     getInitialState() {
         return {
@@ -289,16 +313,16 @@ class AutoLevelWidget extends PureComponent {
                 name: MODAL_NONE,
                 params: {}
             },
-            startX: 3,
-            endX: 100,
-            startY: 2,
-            endY: 98,
-            stepX: 10,
-            stepY: 10,
-            feedXY: 600,
-            feedZ: 50,
-            depth: 6,
-            height: 5
+            startX: Number(this.config.get('startX') || 0).toFixed(3) * 1,
+            endX: Number(this.config.get('endX') || 100).toFixed(3) * 1,
+            startY: Number(this.config.get('startY') || 0).toFixed(3) * 1,
+            endY: Number(this.config.get('endY') || 100).toFixed(3) * 1,
+            stepX: Number(this.config.get('stepX') || 10).toFixed(3) * 1,
+            stepY: Number(this.config.get('stepY') || 10).toFixed(3) * 1,
+            feedXY: Number(this.config.get('feedXY') || 600).toFixed(3) * 1,
+            feedZ: Number(this.config.get('feedZ') || 50).toFixed(3) * 1,
+            depth: Number(this.config.get('depth') || 5).toFixed(3) * 1,
+            height: Number(this.config.get('height') || 3).toFixed(3) * 1,
         };
     }
 

@@ -36,7 +36,7 @@ class MakeProbeFile extends PureComponent {
                                         className="form-control"
                                         value={startX}
                                         placeholder="0.00"
-                                        min={0}
+                                        min={-200}
                                         step={step}
                                         onChange={actions.handleStartXChange}
                                     />
@@ -70,7 +70,7 @@ class MakeProbeFile extends PureComponent {
                                         className="form-control"
                                         value={startY}
                                         placeholder="0.00"
-                                        min={0}
+                                        min={-200}
                                         step={step}
                                         onChange={actions.handleStartYChange}
                                     />
