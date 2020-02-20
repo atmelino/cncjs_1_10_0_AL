@@ -533,5 +533,19 @@
     "Show Cutting Tool": "",
     "Ready to start": "",
     "Connect to an IP camera": "",
-    "The URL must be for a Motion JPEG (mjpeg) HTTP or RTSP stream.": ""
+    "The URL must be for a Motion JPEG (mjpeg) HTTP or RTSP stream.": "",
+    "AutoLevel Widget": "",
+    "This widget lets you probe a grid for autolevelling a PCB.": "",
+    "AutoLevel": "",
+    "Make Probing Grid File": "",
+    "Start X": "",
+    "End X": "",
+    "Start Y": "",
+    "End Y": "",
+    "Step X": "",
+    "Step Y": "",
+    "Feedrate X-Y": "",
+    "Feedrate Z": "",
+    "Safe Height": "",
+    "Make File": ""
 }

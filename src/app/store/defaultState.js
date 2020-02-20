@@ -31,6 +31,9 @@ const defaultState = {
         }
     },
     widgets: {
+        autolevel: {
+            minimized: false
+        },
         axes: {
             minimized: false,
             axes: ['x', 'y', 'z'],
