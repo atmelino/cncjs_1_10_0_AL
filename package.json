@@ -56,6 +56,7 @@
     "build:win-ia32": "bash -c 'scripts/electron-builder.sh --win --ia32'",
     "build:win-x64": "bash -c 'scripts/electron-builder.sh --win --x64'",
     "start": "./bin/cncjs",
+    "start-vv": "./bin/cnc -vv",
     "start-vvv": "./bin/cnc -vvv",
     "start-electron": "electron ./dist/cncjs/main",
     "watch-dev": "cross-env NODE_ENV=development webpack-cli --watch --config webpack.config.server.development.js",
