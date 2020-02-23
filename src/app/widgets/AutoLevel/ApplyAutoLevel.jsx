@@ -11,63 +11,91 @@ class ApplyAutoLevel extends PureComponent {
         actions: PropTypes.object
     };
 
+    fields = {
+        name: null,
+        password: null
+    };
+
+    fileInputEl = null;
+
+    handleClickUpload = (event) => {
+        this.fileInputEl.value = null;
+        this.fileInputEl.click();
+    };
+
     render() {
         const { state, actions } = this.props;
         const { startX, endX, startY, endY, stepX, stepY, feedXY, feedZ, depth, height } = state;
         //log.setLevel(TRACE);
         //log.log(INFO, 'MakeProbeFile render:' + JSON.stringify(state));
 
-        const displayUnits = i18n._('mm');
-        const step = 1;
-
         return (
             <Modal disableOverlay size="sm" onClose={actions.closeModal}>
                 <Modal.Header>
-                    <Modal.Title>{i18n._('Make Probing Grid File')}</Modal.Title>
+                    <Modal.Title>{i18n._('Apply Autolevel')}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <div className="row no-gutters">
-                        <div className="col-xs-6" style={{ paddingRight: 5 }}>
-                            <div className="form-group">
-                                <label className="control-label">{i18n._('Start X')}</label>
-                                <div className="input-group input-group-sm">
-                                    <input
-                                        type="number"
-                                        className="form-control"
-                                        value={startX}
-                                        placeholder="0.00"
-                                        min={-200}
-                                        step={step}
-                                        onChange={actions.handleStartXChange}
-                                    />
-                                    <div className="input-group-addon">{displayUnits}</div>
-                                </div>
-                            </div>
+                    <input
+                        // The ref attribute adds a reference to the component to
+                        // this.refs when the component is mounted.
+                        ref={(node) => {
+                            this.fileInputEl = node;
+                        }}
+                        type="file"
+                        style={{ display: 'none' }}
+                        multiple={false}
+                        onChange={this.handleChangeFile}
+                    />
+                    <div className="row row-no-gutters">
+                        <div className="col-sm-2">
+                            <label className="control-label">{i18n._('Probing Data')}</label>
                         </div>
-                        <button
-                            type="button"
-                            className="btn btn-default"
-                            onClick={actions.handleLoadFile}
-                        >
-                            {i18n._('Load G-Code')}
-                        </button>
+                        <div className="col-sm-8">
+                            <input
+                                ref={node => {
+                                    this.fields.name = node;
+                                }}
+                                type="text"
+                                className="form-control"
+                                placeholder={i18n._('')}
+                            />
+                        </div>
+                        <div className="col-sm-2">
+                            <button
+                                type="button"
+                                className="btn btn-default"
+                                title={i18n._('Upload G-code')}
+                                onClick={this.handleClickUpload}
+                            >
+                                {i18n._('Select')}
+                            </button>
 
-                        <div className="col-xs-6" style={{ paddingLeft: 5 }}>
-                            <div className="form-group">
-                                <label className="control-label">{i18n._('End X')}</label>
-                                <div className="input-group input-group-sm">
-                                    <input
-                                        type="number"
-                                        className="form-control"
-                                        value={endX}
-                                        placeholder="0.00"
-                                        min={0}
-                                        step={step}
-                                        onChange={actions.handleEndXChange}
-                                    />
-                                    <span className="input-group-addon">{displayUnits}</span>
-                                </div>
-                            </div>
+                        </div>
+                    </div>
+                    <div className="row row-no-gutters">
+                        <div className="col-sm-2">
+                            <label className="control-label">{i18n._('Original G-Code')}</label>
+                        </div>
+                        <div className="col-sm-8">
+                            <input
+                                ref={node => {
+                                    this.fields.name = node;
+                                }}
+                                type="text"
+                                className="form-control"
+                                placeholder={i18n._('')}
+                            />
+                        </div>
+                        <div className="col-sm-2">
+                            <button
+                                type="button"
+                                className="btn btn-default"
+                                title={i18n._('Upload G-code')}
+                                onClick={this.handleClickUpload}
+                            >
+                                {i18n._('Select')}
+                            </button>
+
                         </div>
                     </div>
                 </Modal.Body>
@@ -90,7 +118,7 @@ class ApplyAutoLevel extends PureComponent {
                         {i18n._('Make File')}
                     </button>
                 </Modal.Footer>
-            </Modal>
+            </Modal >
         );
     }
 }

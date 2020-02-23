@@ -1,6 +1,7 @@
 import get from 'lodash/get';
 import includes from 'lodash/includes';
 import mapValues from 'lodash/mapValues';
+import pick from 'lodash/pick';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
@@ -108,8 +109,46 @@ class AutoLevelWidget extends PureComponent {
         },
         handleLoadFile: (event) => {
             log.log(INFO, 'AutoLevel/index.jsx handleLoadFile');
+            //this.handleChangeFile();
             const startX = event.target.value;
             this.setState({ startX: parseInt(startX, 10) });
+        },
+        handleChangeFile: (event) => {
+            log.log(INFO, 'AutoLevel/index.jsx handleChangeFile');
+            const { actions } = this.props;
+            const files = event.target.files;
+            const file = files[0];
+            const reader = new FileReader();
+
+            reader.onloadend = (event) => {
+                const { result, error } = event.target;
+
+                if (error) {
+                    log.error(error);
+                    return;
+                }
+
+                log.debug('FileReader:', pick(file, [
+                    'lastModified',
+                    'lastModifiedDate',
+                    'meta',
+                    'name',
+                    'size',
+                    'type'
+                ]));
+
+                const meta = {
+                    name: file.name,
+                    size: file.size
+                };
+                actions.uploadFile(result, meta);
+            };
+
+            try {
+                reader.readAsText(file);
+            } catch (err) {
+                // Ignore error
+            }
         },
         handleStartXChange: (event) => {
             const startX = event.target.value;

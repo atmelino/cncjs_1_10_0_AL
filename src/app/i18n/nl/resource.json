@@ -547,5 +547,6 @@
     "Feedrate X-Y": "",
     "Feedrate Z": "",
     "Safe Height": "",
-    "Make File": ""
+    "Make File": "",
+    "Load G-Code": ""
 }

@@ -547,5 +547,6 @@
     "Feedrate X-Y": "Feedrate X-Y",
     "Feedrate Z": "Feedrate Z",
     "Safe Height": "Safe Height",
-    "Make File": "Make File"
+    "Make File": "Make File",
+    "Load G-Code": "Load G-Code"
 }
