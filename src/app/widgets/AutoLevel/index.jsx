@@ -14,6 +14,7 @@ import { in2mm, mm2in } from '../../lib/units';
 import WidgetConfig from '../WidgetConfig';
 import AutoLevel from './AutoLevel';
 import MakeProbeFile from './MakeProbeFile';
+import ApplyAutoLevel from './ApplyAutoLevel';
 import {
     // Units
     IMPERIAL_UNITS,
@@ -29,7 +30,8 @@ import {
 } from '../../constants';
 import {
     MODAL_NONE,
-    MODAL_PREVIEW
+    MODAL_PREVIEW,
+    MODAL_PREVIEW2
 } from './constants';
 import styles from './index.styl';
 
@@ -75,6 +77,16 @@ class AutoLevelWidget extends PureComponent {
                 }
             });
         },
+        openModal2: (name = MODAL_NONE, params = {}) => {
+            log.setLevel(TRACE);
+            log.log(INFO, 'AutoLevel/index.jsx openModal2');
+            this.setState({
+                modal: {
+                    name: name,
+                    params: params
+                }
+            });
+        },
         closeModal: () => {
             this.setState({
                 modal: {
@@ -93,6 +105,11 @@ class AutoLevelWidget extends PureComponent {
                     }
                 }
             });
+        },
+        handleLoadFile: (event) => {
+            log.log(INFO, 'AutoLevel/index.jsx handleLoadFile');
+            const startX = event.target.value;
+            this.setState({ startX: parseInt(startX, 10) });
         },
         handleStartXChange: (event) => {
             const startX = event.target.value;
@@ -439,6 +456,9 @@ class AutoLevelWidget extends PureComponent {
                 >
                     {state.modal.name === MODAL_PREVIEW &&
                         <MakeProbeFile state={state} actions={actions} />
+                    }
+                    {state.modal.name === MODAL_PREVIEW2 &&
+                        <ApplyAutoLevel state={state} actions={actions} />
                     }
                     <AutoLevel
                         state={state}

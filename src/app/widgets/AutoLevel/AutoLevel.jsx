@@ -6,7 +6,8 @@ import './react-table.css';
 import { TRACE, DEBUG, INFO, WARN, ERROR } from 'universal-logger';
 import log from '../../lib/log';
 import {
-    MODAL_PREVIEW
+    MODAL_PREVIEW,
+    MODAL_PREVIEW2
 } from './constants';
 
 class AutoLevel extends PureComponent {
@@ -39,8 +40,8 @@ class AutoLevel extends PureComponent {
             // this.state.probingString.push(el.x + ' ' + el.y + ' ' + el.z + ' ' + el.pz + '\n');
             this.state.probingString.push(el.x + ' ' + el.y + ' ' + el.z + '\n');
         });
-        var element = document.createElement('a');
-        var file = new Blob(this.state.probingString, { type: 'text/plain' });
+        let element = document.createElement('a');
+        let file = new Blob(this.state.probingString, { type: 'text/plain' });
         element.href = URL.createObjectURL(file);
         element.download = 'probedata.rpf';
         element.click();
@@ -97,7 +98,7 @@ class AutoLevel extends PureComponent {
                 log.info('AutoLevel new reference: ' + this.state.referenceZ);
                 let PRBz = Number(sz);
                 let corz = PRBz - this.state.referenceZ; // corrected z
-                var cz = numeral(corz).format('0.000');
+                let cz = numeral(corz).format('0.000');
 
                 // if (this.state.probingObj.length > 0) {
                 //     log.error('AutoLevel points: ' + this.state.probingObj.length);
@@ -149,6 +150,18 @@ class AutoLevel extends PureComponent {
                             disabled={false}
                         >
                             Make Probe File
+                        </button>
+                    </div>
+                    <div className="col-xs-12">
+                        <button
+                            type="button"
+                            className="btn btn-sm btn-default"
+                            onClick={() => {
+                                actions.openModal2(MODAL_PREVIEW2);
+                            }}
+                            disabled={false}
+                        >
+                            Apply Autolevel
                         </button>
                     </div>
                 </div>
