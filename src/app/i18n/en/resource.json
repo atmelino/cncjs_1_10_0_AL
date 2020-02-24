@@ -548,5 +548,8 @@
     "Feedrate Z": "Feedrate Z",
     "Safe Height": "Safe Height",
     "Make File": "Make File",
-    "Load G-Code": "Load G-Code"
+    "Apply Autolevel": "Apply Autolevel",
+    "Probing Data": "Probing Data",
+    "Select": "Select",
+    "Original G-Code": "Original G-Code"
 }

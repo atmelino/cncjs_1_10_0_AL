@@ -44,7 +44,7 @@ class ApplyAutoLevel extends PureComponent {
                         type="file"
                         style={{ display: 'none' }}
                         multiple={false}
-                        onChange={this.handleChangeFile}
+                        onChange={actions.handleChangeFile}
                     />
                     <div className="row row-no-gutters">
                         <div className="col-sm-2">

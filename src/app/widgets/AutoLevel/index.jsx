@@ -119,7 +119,7 @@ class AutoLevelWidget extends PureComponent {
             const files = event.target.files;
             const file = files[0];
             const reader = new FileReader();
-
+            let content = '';
             reader.onloadend = (event) => {
                 const { result, error } = event.target;
 
@@ -137,17 +137,21 @@ class AutoLevelWidget extends PureComponent {
                     'type'
                 ]));
 
-                const meta = {
-                    name: file.name,
-                    size: file.size
-                };
-                actions.uploadFile(result, meta);
+                var contents = event.target.result;
+                console.log('File contents:' + contents);
+                log.log(INFO, 'AutoLevel/index.jsx handleChangeFile' + content);
+                // const meta = {
+                //     name: file.name,
+                //     size: file.size
+                // };
+                // actions.uploadFile(result, meta);
             };
 
             try {
-                reader.readAsText(file);
+                content = reader.readAsText(file);
+                log.log(INFO, 'AutoLevel/index.jsx handleChangeFile' + content);
             } catch (err) {
-                // Ignore error
+                log.error('AutoLevel/index.jsx handleChangeFile erro reading file');
             }
         },
         handleStartXChange: (event) => {
