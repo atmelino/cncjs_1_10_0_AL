@@ -43,6 +43,7 @@ class AutoLevelWidget extends PureComponent {
         onRemove: PropTypes.func.isRequired,
         sortable: PropTypes.object
     };
+    probedPoints = [];
 
     // Public methods
     collapse = () => {
@@ -138,20 +139,26 @@ class AutoLevelWidget extends PureComponent {
                 ]));
 
                 var contents = event.target.result;
-                console.log('File contents:' + contents);
-                log.log(INFO, 'AutoLevel/index.jsx handleChangeFile' + content);
-                // const meta = {
-                //     name: file.name,
-                //     size: file.size
-                // };
-                // actions.uploadFile(result, meta);
+                log.log(INFO, 'AutoLevel/index.jsx handleChangeFile result \n' + contents);
+                let lines = contents.split('\n');
+                log.log(INFO, 'AutoLevel/index.jsx handleChangeFile lines \n' + lines);
+                //let prbm =
+                lines.forEach(line => {
+                    let la = line.split(' ');
+                    let pt = {
+                        x: parseFloat(la[0]),
+                        y: parseFloat(la[1]),
+                        z: parseFloat(la[2])
+                    };
+                    this.probedPoints.push(pt);
+                });
+                log.log(INFO, 'AutoLevel/index.jsx handleChangeFile probedPoints \n' + JSON.stringify(this.probedPoints));
             };
 
             try {
                 content = reader.readAsText(file);
-                log.log(INFO, 'AutoLevel/index.jsx handleChangeFile' + content);
             } catch (err) {
-                log.error('AutoLevel/index.jsx handleChangeFile erro reading file');
+                log.error('AutoLevel/index.jsx handleChangeFile error reading file');
             }
         },
         handleStartXChange: (event) => {
