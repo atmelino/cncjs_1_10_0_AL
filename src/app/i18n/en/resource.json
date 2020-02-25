@@ -551,5 +551,6 @@
     "Apply Autolevel": "Apply Autolevel",
     "Probing Data": "Probing Data",
     "Select": "Select",
-    "Original G-Code": "Original G-Code"
+    "Original G-Code": "Original G-Code",
+    "Upload Probing Data": "Upload Probing Data"
 }

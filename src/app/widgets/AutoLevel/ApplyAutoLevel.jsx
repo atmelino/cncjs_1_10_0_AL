@@ -17,20 +17,20 @@ class ApplyAutoLevel extends PureComponent {
         password: null
     };
     probedPoints = [];
+    gcode = '';
 
-    which = true;
-
-    functionToCall = handleLoadProbingFile;
-
+    choice = null;
     fileInputEl = null;
 
-    handleClickUpload = (event) => {
+    handleClickUpload = (param) => {
+        this.choice = param;
+        log.log(INFO, 'ApplyAutoLevel.jsx handleClickUpload choice=' + this.choice);
         this.fileInputEl.value = null;
         this.fileInputEl.click();
     };
 
-    handleLoadProbingFile = (event) => {
-        log.log(INFO, 'AutoLevel/index.jsx handleLoadProbingFile');
+    handleLoadFile = (event) => {
+        log.log(INFO, 'ApplyAutoLevel.jsx handleLoadFile choice=' + this.choice);
         const { actions } = this.props;
         const files = event.target.files;
         const file = files[0];
@@ -53,82 +53,45 @@ class ApplyAutoLevel extends PureComponent {
             ]));
 
             var contents = event.target.result;
-            log.log(INFO, 'AutoLevel/index.jsx handleLoadProbingFile result \n' + contents);
-            let lines = contents.split('\n');
-            log.log(INFO, 'AutoLevel/index.jsx handleLoadProbingFile lines \n' + lines);
-            //let prbm =
-            lines.forEach(line => {
-                let la = line.split(' ');
-                let pt = {
-                    x: parseFloat(la[0]),
-                    y: parseFloat(la[1]),
-                    z: parseFloat(la[2])
-                };
-                if (pt.x) {
-                    log.log(INFO, 'AutoLevel/index.jsx handleLoadProbingFile pt.x \n' + JSON.stringify(pt.x));
-                    this.probedPoints.push(pt);
-                }
-            });
-            log.log(INFO, 'AutoLevel/index.jsx handleLoadProbingFile probedPoints \n' + JSON.stringify(this.probedPoints));
-        };
-
-        try {
-            reader.readAsText(file);
-        } catch (err) {
-            log.error('AutoLevel/index.jsx handleLoadProbingFile error reading file');
-        }
-    };
-
-
-    handleLoadGcodeFile = (event) => {
-        log.log(INFO, 'AutoLevel/index.jsx handleLoadGcodeFile');
-        const { actions } = this.props;
-        const files = event.target.files;
-        const file = files[0];
-        const reader = new FileReader();
-        reader.onloadend = (event) => {
-            const { result, error } = event.target;
-
-            if (error) {
-                log.error(error);
-                return;
+            if (this.choice === 1) {
+                this.probingFile(contents);
             }
-
-            log.debug('FileReader:', pick(file, [
-                'lastModified',
-                'lastModifiedDate',
-                'meta',
-                'name',
-                'size',
-                'type'
-            ]));
-
-            var contents = event.target.result;
-            log.log(INFO, 'AutoLevel/index.jsx handleLoadGcodeFile result \n' + contents);
-            let lines = contents.split('\n');
-            log.log(INFO, 'AutoLevel/index.jsx handleLoadGcodeFile lines \n' + lines);
-            //let prbm =
-            lines.forEach(line => {
-                let la = line.split(' ');
-                let pt = {
-                    x: parseFloat(la[0]),
-                    y: parseFloat(la[1]),
-                    z: parseFloat(la[2])
-                };
-                if (pt.x) {
-                    log.log(INFO, 'AutoLevel/index.jsx handleLoadGcodeFile pt.x \n' + JSON.stringify(pt.x));
-                    this.probedPoints.push(pt);
-                }
-            });
-            log.log(INFO, 'AutoLevel/index.jsx handleLoadGcodeFile probedPoints \n' + JSON.stringify(this.probedPoints));
+            if (this.choice === 2) {
+                this.gcodeFile(contents);
+            }
         };
 
         try {
             reader.readAsText(file);
         } catch (err) {
-            log.error('AutoLevel/index.jsx handleLoadGcodeFile error reading file');
+            log.error('ApplyAutoLevel.jsx handleLoadProbingFile error reading file');
         }
     };
+
+    probingFile = (contents) => {
+        //log.log(INFO, 'ApplyAutoLevel.jsx handleLoadProbingFile result \n' + contents);
+        let lines = contents.split('\n');
+        //log.log(INFO, 'ApplyAutoLevel.jsx handleLoadProbingFile lines \n' + lines);
+        //let prbm =
+        this.probedPoints = [];
+        lines.forEach(line => {
+            let la = line.split(' ');
+            let pt = {
+                x: parseFloat(la[0]),
+                y: parseFloat(la[1]),
+                z: parseFloat(la[2])
+            };
+            if (pt.x) {
+                //log.log(INFO, 'ApplyAutoLevel.jsx handleLoadProbingFile pt.x \n' + JSON.stringify(pt.x));
+                this.probedPoints.push(pt);
+            }
+        });
+        log.log(INFO, 'ApplyAutoLevel.jsx probingFile probedPoints \n' + JSON.stringify(this.probedPoints));
+    }
+
+    gcodeFile = (contents) => {
+        log.log(INFO, 'ApplyAutoLevel.jsx gcodeFile  \n' + contents);
+    }
 
     render() {
         const { state, actions } = this.props;
@@ -151,7 +114,7 @@ class ApplyAutoLevel extends PureComponent {
                         type="file"
                         style={{ display: 'none' }}
                         multiple={false}
-                        onChange={this.functionToCall}
+                        onChange={this.handleLoadFile}
                     />
                     <div className="row row-no-gutters">
                         <div className="col-sm-2">
@@ -172,7 +135,7 @@ class ApplyAutoLevel extends PureComponent {
                                 type="button"
                                 className="btn btn-default"
                                 title={i18n._('Upload Probing Data')}
-                                onClick={this.handleClickUpload}
+                                onClick={() => this.handleClickUpload(1)}
                             >
                                 {i18n._('Select')}
                             </button>
@@ -198,7 +161,7 @@ class ApplyAutoLevel extends PureComponent {
                                 type="button"
                                 className="btn btn-default"
                                 title={i18n._('Upload G-code')}
-                                onClick={this.handleClickUpload}
+                                onClick={() => this.handleClickUpload(2)}
                             >
                                 {i18n._('Select')}
                             </button>
