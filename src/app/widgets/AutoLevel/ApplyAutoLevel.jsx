@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import pick from 'lodash/pick';
 import React, { PureComponent } from 'react';
 import Modal from 'app/components/Modal';
 import i18n from 'app/lib/i18n';
@@ -15,12 +16,114 @@ class ApplyAutoLevel extends PureComponent {
         name: null,
         password: null
     };
+    probedPoints = [];
 
     fileInputEl = null;
 
     handleClickUpload = (event) => {
         this.fileInputEl.value = null;
         this.fileInputEl.click();
+    };
+
+    handleLoadProbingFile = (event) => {
+        log.log(INFO, 'AutoLevel/index.jsx handleLoadProbingFile');
+        const { actions } = this.props;
+        const files = event.target.files;
+        const file = files[0];
+        const reader = new FileReader();
+        reader.onloadend = (event) => {
+            const { result, error } = event.target;
+
+            if (error) {
+                log.error(error);
+                return;
+            }
+
+            log.debug('FileReader:', pick(file, [
+                'lastModified',
+                'lastModifiedDate',
+                'meta',
+                'name',
+                'size',
+                'type'
+            ]));
+
+            var contents = event.target.result;
+            log.log(INFO, 'AutoLevel/index.jsx handleLoadProbingFile result \n' + contents);
+            let lines = contents.split('\n');
+            log.log(INFO, 'AutoLevel/index.jsx handleLoadProbingFile lines \n' + lines);
+            //let prbm =
+            lines.forEach(line => {
+                let la = line.split(' ');
+                let pt = {
+                    x: parseFloat(la[0]),
+                    y: parseFloat(la[1]),
+                    z: parseFloat(la[2])
+                };
+                if (pt.x) {
+                    log.log(INFO, 'AutoLevel/index.jsx handleLoadProbingFile pt.x \n' + JSON.stringify(pt.x));
+                    this.probedPoints.push(pt);
+                }
+            });
+            log.log(INFO, 'AutoLevel/index.jsx handleLoadProbingFile probedPoints \n' + JSON.stringify(this.probedPoints));
+        };
+
+        try {
+            reader.readAsText(file);
+        } catch (err) {
+            log.error('AutoLevel/index.jsx handleLoadProbingFile error reading file');
+        }
+    };
+
+
+    handleLoadGcodeFile = (event) => {
+        log.log(INFO, 'AutoLevel/index.jsx handleLoadGcodeFile');
+        const { actions } = this.props;
+        const files = event.target.files;
+        const file = files[0];
+        const reader = new FileReader();
+        reader.onloadend = (event) => {
+            const { result, error } = event.target;
+
+            if (error) {
+                log.error(error);
+                return;
+            }
+
+            log.debug('FileReader:', pick(file, [
+                'lastModified',
+                'lastModifiedDate',
+                'meta',
+                'name',
+                'size',
+                'type'
+            ]));
+
+            var contents = event.target.result;
+            log.log(INFO, 'AutoLevel/index.jsx handleLoadGcodeFile result \n' + contents);
+            let lines = contents.split('\n');
+            log.log(INFO, 'AutoLevel/index.jsx handleLoadGcodeFile lines \n' + lines);
+            //let prbm =
+            lines.forEach(line => {
+                let la = line.split(' ');
+                let pt = {
+                    x: parseFloat(la[0]),
+                    y: parseFloat(la[1]),
+                    z: parseFloat(la[2])
+                };
+                if (pt.x) {
+                    log.log(INFO, 'AutoLevel/index.jsx handleLoadGcodeFile pt.x \n' + JSON.stringify(pt.x));
+                    this.probedPoints.push(pt);
+                }
+            });
+            log.log(INFO, 'AutoLevel/index.jsx handleLoadGcodeFile probedPoints \n' + JSON.stringify(this.probedPoints));
+        };
+
+        try {
+            reader.readAsText(file);
+        } catch (err) {
+            log.error('AutoLevel/index.jsx handleLoadGcodeFile error reading file');
+        }
     };
 
     render() {
@@ -44,7 +147,7 @@ class ApplyAutoLevel extends PureComponent {
                         type="file"
                         style={{ display: 'none' }}
                         multiple={false}
-                        onChange={actions.handleChangeFile}
+                        onChange={this.handleLoadProbingFile}
                     />
                     <div className="row row-no-gutters">
                         <div className="col-sm-2">
@@ -65,7 +168,7 @@ class ApplyAutoLevel extends PureComponent {
                                 type="button"
                                 className="btn btn-default"
                                 title={i18n._('Upload G-code')}
-                                onClick={this.handleClickUpload}
+                                onClick={this.handleLoadGcodeFile}
                             >
                                 {i18n._('Select')}
                             </button>

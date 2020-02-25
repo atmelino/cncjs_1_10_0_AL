@@ -1,7 +1,6 @@
 import get from 'lodash/get';
 import includes from 'lodash/includes';
 import mapValues from 'lodash/mapValues';
-import pick from 'lodash/pick';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
@@ -43,7 +42,6 @@ class AutoLevelWidget extends PureComponent {
         onRemove: PropTypes.func.isRequired,
         sortable: PropTypes.object
     };
-    probedPoints = [];
 
     // Public methods
     collapse = () => {
@@ -113,53 +111,6 @@ class AutoLevelWidget extends PureComponent {
             //this.handleChangeFile();
             const startX = event.target.value;
             this.setState({ startX: parseInt(startX, 10) });
-        },
-        handleChangeFile: (event) => {
-            log.log(INFO, 'AutoLevel/index.jsx handleChangeFile');
-            const { actions } = this.props;
-            const files = event.target.files;
-            const file = files[0];
-            const reader = new FileReader();
-            let content = '';
-            reader.onloadend = (event) => {
-                const { result, error } = event.target;
-
-                if (error) {
-                    log.error(error);
-                    return;
-                }
-
-                log.debug('FileReader:', pick(file, [
-                    'lastModified',
-                    'lastModifiedDate',
-                    'meta',
-                    'name',
-                    'size',
-                    'type'
-                ]));
-
-                var contents = event.target.result;
-                log.log(INFO, 'AutoLevel/index.jsx handleChangeFile result \n' + contents);
-                let lines = contents.split('\n');
-                log.log(INFO, 'AutoLevel/index.jsx handleChangeFile lines \n' + lines);
-                //let prbm =
-                lines.forEach(line => {
-                    let la = line.split(' ');
-                    let pt = {
-                        x: parseFloat(la[0]),
-                        y: parseFloat(la[1]),
-                        z: parseFloat(la[2])
-                    };
-                    this.probedPoints.push(pt);
-                });
-                log.log(INFO, 'AutoLevel/index.jsx handleChangeFile probedPoints \n' + JSON.stringify(this.probedPoints));
-            };
-
-            try {
-                content = reader.readAsText(file);
-            } catch (err) {
-                log.error('AutoLevel/index.jsx handleChangeFile error reading file');
-            }
         },
         handleStartXChange: (event) => {
             const startX = event.target.value;
