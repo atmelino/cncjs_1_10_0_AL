@@ -18,6 +18,10 @@ class ApplyAutoLevel extends PureComponent {
     };
     probedPoints = [];
 
+    which = true;
+
+    functionToCall = handleLoadProbingFile;
+
     fileInputEl = null;
 
     handleClickUpload = (event) => {
@@ -147,7 +151,7 @@ class ApplyAutoLevel extends PureComponent {
                         type="file"
                         style={{ display: 'none' }}
                         multiple={false}
-                        onChange={this.handleLoadProbingFile}
+                        onChange={this.functionToCall}
                     />
                     <div className="row row-no-gutters">
                         <div className="col-sm-2">
@@ -167,8 +171,8 @@ class ApplyAutoLevel extends PureComponent {
                             <button
                                 type="button"
                                 className="btn btn-default"
-                                title={i18n._('Upload G-code')}
-                                onClick={this.handleLoadGcodeFile}
+                                title={i18n._('Upload Probing Data')}
+                                onClick={this.handleClickUpload}
                             >
                                 {i18n._('Select')}
                             </button>
