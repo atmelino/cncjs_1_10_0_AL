@@ -287,7 +287,7 @@ class AutoLevelWidget extends PureComponent {
         this.removeControllerEvents();
     }
     componentDidUpdate(prevProps, prevState) {
-        log.log(INFO, 'AutoLevel/index.jsx componentDidUpdate');
+        //log.log(INFO, 'AutoLevel/index.jsx componentDidUpdate');
         const {
             minimized
         } = this.state;

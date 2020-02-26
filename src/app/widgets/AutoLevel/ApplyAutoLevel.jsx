@@ -12,6 +12,11 @@ class ApplyAutoLevel extends PureComponent {
         actions: PropTypes.object
     };
 
+    state = {
+        probingFileName: '- none -',
+        gcodeFileName: '- none -',
+    }
+
     fields = {
         name: null,
         password: null
@@ -54,10 +59,12 @@ class ApplyAutoLevel extends PureComponent {
 
             var contents = event.target.result;
             if (this.choice === 1) {
-                this.probingFile(contents);
+                this.setState({ probingFileName: file.name });
+                this.readProbingFile(contents);
             }
             if (this.choice === 2) {
-                this.gcodeFile(contents);
+                this.setState({ gcodeFileName: file.name });
+                this.readGcodeFile(contents);
             }
         };
 
@@ -68,7 +75,7 @@ class ApplyAutoLevel extends PureComponent {
         }
     };
 
-    probingFile = (contents) => {
+    readProbingFile = (contents) => {
         //log.log(INFO, 'ApplyAutoLevel.jsx handleLoadProbingFile result \n' + contents);
         let lines = contents.split('\n');
         //log.log(INFO, 'ApplyAutoLevel.jsx handleLoadProbingFile lines \n' + lines);
@@ -89,8 +96,12 @@ class ApplyAutoLevel extends PureComponent {
         log.log(INFO, 'ApplyAutoLevel.jsx probingFile probedPoints \n' + JSON.stringify(this.probedPoints));
     }
 
-    gcodeFile = (contents) => {
+    readGcodeFile = (contents) => {
         log.log(INFO, 'ApplyAutoLevel.jsx gcodeFile  \n' + contents);
+    }
+
+    autolevel = (contents) => {
+        log.log(INFO, 'ApplyAutoLevel.jsx autolevel \n');
     }
 
     render() {
@@ -118,17 +129,12 @@ class ApplyAutoLevel extends PureComponent {
                     />
                     <div className="row row-no-gutters">
                         <div className="col-sm-2">
-                            <label className="control-label">{i18n._('Probing Data')}</label>
+                            <label className="control-label">{i18n._('Probing Data:')}</label>
                         </div>
                         <div className="col-sm-8">
-                            <input
-                                ref={node => {
-                                    this.fields.name = node;
-                                }}
-                                type="text"
-                                className="form-control"
-                                placeholder={i18n._('')}
-                            />
+                            <label className="control-label">
+                                {this.state.probingFileName}
+                            </label>
                         </div>
                         <div className="col-sm-2">
                             <button
@@ -144,17 +150,12 @@ class ApplyAutoLevel extends PureComponent {
                     </div>
                     <div className="row row-no-gutters">
                         <div className="col-sm-2">
-                            <label className="control-label">{i18n._('Original G-Code')}</label>
+                            <label className="control-label">{i18n._('Original G-Code:')}</label>
                         </div>
                         <div className="col-sm-8">
-                            <input
-                                ref={node => {
-                                    this.fields.name = node;
-                                }}
-                                type="text"
-                                className="form-control"
-                                placeholder={i18n._('')}
-                            />
+                            <label className="control-label">
+                                {this.state.gcodeFileName}
+                            </label>
                         </div>
                         <div className="col-sm-2">
                             <button
@@ -182,7 +183,7 @@ class ApplyAutoLevel extends PureComponent {
                         className="btn btn-primary"
                         onClick={() => {
                             actions.closeModal();
-                            actions.makeProbeFileCommands('hello');
+                            this.autolevel('hello');
                         }}
                     >
                         {i18n._('Make File')}

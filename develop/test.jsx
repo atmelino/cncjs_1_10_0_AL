@@ -1,3 +1,14 @@
+
+
+                    <div className="row row-no-gutters">
+                        <input
+                            type="file"
+                            ref={this.fileInput}
+                        />
+                    </div>
+
+
+
 <Modal.Body>
 <input
     // The ref attribute adds a reference to the component to
