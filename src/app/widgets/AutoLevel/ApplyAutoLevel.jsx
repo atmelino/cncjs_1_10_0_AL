@@ -85,7 +85,8 @@ class ApplyAutoLevel extends PureComponent {
         // this.probedPoints = [];
         this.probedPoints = JSON.parse(contents);
         log.log(INFO, 'ApplyAutoLevel.jsx readProbingFile probedPoints \n' + JSON.stringify(this.probedPoints));
-        log.log(INFO, 'ApplyAutoLevel.jsx readProbingFile probedPoints[3].z \n' + this.probedPoints[3].z);
+        //log.log(INFO, 'ApplyAutoLevel.jsx readProbingFile probedPoints length \n' + this.probedPoints.length);
+        //log.log(INFO, 'ApplyAutoLevel.jsx readProbingFile probedPoints[3].z \n' + this.probedPoints[3].z);
     }
 
     readGcodeFile = (contents) => {
@@ -116,7 +117,7 @@ class ApplyAutoLevel extends PureComponent {
             let abs = true;
             let result = [];
             lines.forEach(line => {
-                log.log(INFO, 'ApplyAutoLevel.jsx applyCompensation process line' + line);
+                //log.log(INFO, 'ApplyAutoLevel.jsx applyCompensation process line' + line);
                 let lineStripped = this.stripComments(line);
                 if (!/(X|Y|Z)/gi.test(lineStripped)) {
                     result.push(lineStripped); // no coordinate change --> copy to output
@@ -170,10 +171,21 @@ class ApplyAutoLevel extends PureComponent {
             log.log(INFO, 'ApplyAutoLevel.jsx applyCompensation AL: new gcode' + result.join('\n'));
             //this.sckw.loadGcode(newgcodeFileName, result.join('\n'))
             log.log(INFO, 'ApplyAutoLevel.jsx applyCompensation AL: finished');
+            let fileName = newgcodeFileName;
+            let fileContent = result.join('\n');
+            this.download(fileContent, fileName, 'text/plain');
         } catch (x) {
             log.log(INFO, 'ApplyAutoLevel.jsx applyCompensation AL: error occurred' + x);
         }
         log.log(INFO, 'ApplyAutoLevel.jsx applyCompensation Leveling applied\n');
+    }
+
+    download = (content, fileName, contentType) => {
+        var a = document.createElement('a');
+        var file = new Blob([content], { type: contentType });
+        a.href = URL.createObjectURL(file);
+        a.download = fileName;
+        a.click();
     }
 
     stripComments(line) {
