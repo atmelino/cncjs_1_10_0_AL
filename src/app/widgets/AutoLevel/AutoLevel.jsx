@@ -34,17 +34,32 @@ class AutoLevel extends PureComponent {
         });
     };
 
+    download = (content, fileName, contentType) => {
+        var a = document.createElement('a');
+        var file = new Blob([content], { type: contentType });
+        a.href = URL.createObjectURL(file);
+        a.download = fileName;
+        a.click();
+    }
+
     handleClickSave = () => {
-        //var probingString = [];
-        this.state.probingObj.forEach(el => {
-            // this.state.probingString.push(el.x + ' ' + el.y + ' ' + el.z + ' ' + el.pz + '\n');
-            this.state.probingString.push(el.x + ' ' + el.y + ' ' + el.z + '\n');
-        });
-        let element = document.createElement('a');
-        let file = new Blob(this.state.probingString, { type: 'text/plain' });
-        element.href = URL.createObjectURL(file);
-        element.download = 'probedata.rpf';
-        element.click();
+        let fileName = Date.now() + 'probedata.rpf';
+        let fileContent = JSON.stringify(this.state.probingObj);
+        this.download(fileContent, fileName, 'text/plain');
+
+        // //var probingString = [];
+        // this.state.probingObj.forEach(el => {
+        //     // this.state.probingString.push(el.x + ' ' + el.y + ' ' + el.z + ' ' + el.pz + '\n');
+        //     this.state.probingString.push(el.x + ' ' + el.y + ' ' + el.z + '\n');
+        // });
+        // let fileContent = JSON.stringify(this.state.probingObj);
+        // log.log(INFO, 'AutoLevel fileContent=' + fileContent);
+
+        // let element = document.createElement('a');
+        // let file = new Blob(this.state.probingString, { type: 'text/plain' });
+        // element.href = URL.createObjectURL(file);
+        // element.download = 'probedata.rpf';
+        // element.click();
     }
 
     render() {

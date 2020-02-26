@@ -549,8 +549,8 @@
     "Safe Height": "Safe Height",
     "Make File": "Make File",
     "Apply Autolevel": "Apply Autolevel",
-    "Probing Data": "Probing Data",
     "Select": "Select",
-    "Original G-Code": "Original G-Code",
-    "Upload Probing Data": "Upload Probing Data"
+    "Upload Probing Data": "Upload Probing Data",
+    "Probing Data:": "Probing Data:",
+    "Original G-Code:": "Original G-Code:"
 }
