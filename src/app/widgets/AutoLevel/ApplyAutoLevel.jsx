@@ -122,7 +122,8 @@ class ApplyAutoLevel extends PureComponent {
                 if (!/(X|Y|Z)/gi.test(lineStripped)) {
                     result.push(lineStripped); // no coordinate change --> copy to output
                 } else {
-                    log.log(INFO, 'else');
+                    //log.log(INFO, 'else');
+                    let f = 1;
                     if (/(G38.+|G5.+|G10|G2.+|G4.+|G92|G92.1)/gi.test(lineStripped)) {
                         result.push(lineStripped); // skip compensation for these G-Codes
                     } else {
