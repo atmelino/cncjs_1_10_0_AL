@@ -45,7 +45,18 @@ class AutoLevel extends PureComponent {
     handleClickSave = () => {
         let fileName = Date.now() + 'probedata.rpf';
         let fileContent = JSON.stringify(this.state.probingObj);
+        log.log(INFO, 'AutoLevel fileContent=' + fileContent);
         this.download(fileContent, fileName, 'text/plain');
+
+        this.state.probingObj.forEach(el => {
+            this.state.probingString.push(el.x + ' ' + el.y + ' ' + el.z + '\n');
+        });
+
+        let element = document.createElement('a');
+        let file = new Blob(this.state.probingString, { type: 'text/plain' });
+        element.href = URL.createObjectURL(file);
+        element.download = 'probedata.csv';
+        element.click();
     }
 
     simulateProbing = () => {
