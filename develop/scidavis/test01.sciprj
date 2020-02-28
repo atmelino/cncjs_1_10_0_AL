@@ -1,0 +1,35 @@
+SciDAVis 1.26.0 project file
+<scripting-lang>	muParser
+<windows>	2
+<matrix>
+2015
+<matrix creation_time="2020-21-02 23:35:59:025" caption_spec="%n%C{ - }%c" name="Matrix1" columns="5" rows="5"><comment><![CDATA[]]></comment><formula></formula><display numeric_format="g" displayed_digits="6"/><coordinates x_start="0" x_end="10" y_start="0" y_end="10"/><cell row="0" column="0">1.0000000000000000e+00</cell><cell row="1" column="0">2.0000000000000000e+00</cell><cell row="2" column="0">1.0000000000000000e+00</cell><cell row="3" column="0">0.0000000000000000e+00</cell><cell row="4" column="0">0.0000000000000000e+00</cell><cell row="0" column="1">1.0000000000000000e+00</cell><cell row="1" column="1">2.0000000000000000e+00</cell><cell row="2" column="1">1.0000000000000000e+00</cell><cell row="3" column="1">1.0000000000000000e+00</cell><cell row="4" column="1">0.0000000000000000e+00</cell><cell row="0" column="2">2.0000000000000000e+00</cell><cell row="1" column="2">2.0000000000000000e+00</cell><cell row="2" column="2">4.0000000000000000e+00</cell><cell row="3" column="2">2.0000000000000000e+00</cell><cell row="4" column="2">0.0000000000000000e+00</cell><cell row="0" column="3">1.0000000000000000e+00</cell><cell row="1" column="3">2.0000000000000000e+00</cell><cell row="2" column="3">3.0000000000000000e+00</cell><cell row="3" column="3">1.0000000000000000e+00</cell><cell row="4" column="3">0.0000000000000000e+00</cell><cell row="0" column="4">0.0000000000000000e+00</cell><cell row="1" column="4">0.0000000000000000e+00</cell><cell row="2" column="4">1.0000000000000000e+00</cell><cell row="3" column="4">0.0000000000000000e+00</cell><cell row="4" column="4">0.0000000000000000e+00</cell><column_width column="0">56</column_width><column_width column="1">56</column_width><column_width column="2">56</column_width><column_width column="3">56</column_width><column_width column="4">56</column_width><row_height row="0">20</row_height><row_height row="1">20</row_height><row_height row="2">20</row_height><row_height row="3">20</row_height><row_height row="4">20</row_height></matrix>
+geometry	0	1	682	526	
+
+</matrix>
+<SurfacePlot>
+Graph1	2/21/20 11:41 PM
+geometry	682	0	1072	846	active
+SurfaceFunction	matrix<Matrix1>	0	10	0	10	0	4
+Style	box	nofloor	hiddenline
+grids	0
+title		#ff000000	Ubuntu	27	75	0
+colors	#ff000000	#ff000000	#ff000000	#ff000000	#ffffffff	#ff000000	#ffff0000	#ff0000ff	1	
+axesLabels	X axis	Y axis	Z axis
+tics	5	5	5	5	5	5
+tickLengths	1	0.6	1	0.6	1	0.6
+options	0	1	0
+numbersFont	Ubuntu	23	50	0
+xAxisLabelFont	Ubuntu	22	75	0
+yAxisLabelFont	Ubuntu	22	75	0
+zAxisLabelFont	Ubuntu	22	75	0
+rotation	-2	0	-81
+zoom	8.48528
+scaling	0.1	0.1	0.25
+shift	0.15	0	0
+LineWidth	1
+WindowLabel		2
+Orthogonal	0
+</SurfacePlot>
+<log>
+</log>

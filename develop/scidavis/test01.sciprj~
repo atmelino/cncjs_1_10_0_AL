@@ -1,0 +1,11 @@
+SciDAVis 1.26.0 project file
+<scripting-lang>	muParser
+<windows>	1
+<table>
+1487
+<table creation_time="2020-21-02 23:24:42:526" caption_spec="%n%C{ - }%c" name="Table1" columns="2" rows="30"><comment><![CDATA[]]></comment><column creation_time="2020-21-02 23:24:42:526" caption_spec="%n%C{ - }%c" name="1" type="TypeDouble" mode="Numeric" plot_designation="X"><comment><![CDATA[]]></comment><input_filter><simple_filter creation_time="2020-21-02 23:24:42:526" caption_spec="%n%C{ - }%c" name="InputFilter" filter_name="String2DoubleFilter"><comment><![CDATA[]]></comment></simple_filter></input_filter><output_filter><simple_filter creation_time="2020-21-02 23:24:42:526" caption_spec="%n%C{ - }%c" name="OutputFilter" format="f" digits="14" filter_name="Double2StringFilter"><comment><![CDATA[]]></comment></simple_filter></output_filter></column><column creation_time="2020-21-02 23:24:42:526" caption_spec="%n%C{ - }%c" name="2" type="TypeDouble" mode="Numeric" plot_designation="Y"><comment><![CDATA[]]></comment><input_filter><simple_filter creation_time="2020-21-02 23:24:42:526" caption_spec="%n%C{ - }%c" name="InputFilter" filter_name="String2DoubleFilter"><comment><![CDATA[]]></comment></simple_filter></input_filter><output_filter><simple_filter creation_time="2020-21-02 23:24:42:526" caption_spec="%n%C{ - }%c" name="OutputFilter" format="f" digits="14" filter_name="Double2StringFilter"><comment><![CDATA[]]></comment></simple_filter></output_filter></column><column_width column="0">120</column_width><column_width column="1">120</column_width></table>
+geometry	93	70	564	404	active
+
+</table>
+<log>
+</log>

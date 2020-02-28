@@ -21,6 +21,7 @@ class AutoLevel extends PureComponent {
         this.state = {
             probingObj: [],
             probingString: [],
+            probingMatrix: [],
             referenceZ: 0.0
         };
     }
@@ -33,6 +34,17 @@ class AutoLevel extends PureComponent {
             referenceZ: 0.0
         });
     };
+
+    downloadableCSV = (rows) => {
+        let content = '';
+
+        rows.forEach((row, index) => {
+            content += row.join(',') + '\n';
+        });
+
+        //return encodeURI(content);
+        return content;
+    }
 
     download = (content, fileName, contentType) => {
         var a = document.createElement('a');
@@ -48,27 +60,34 @@ class AutoLevel extends PureComponent {
         log.log(INFO, 'AutoLevel fileContent=' + fileContent);
         this.download(fileContent, fileName, 'text/plain');
 
-        this.state.probingObj.forEach(el => {
-            this.state.probingString.push(el.x + ' ' + el.y + ' ' + el.z + '\n');
-        });
+        // this.state.probingObj.forEach(el => {
+        //     this.state.probingString.push(el.x + ' ' + el.y + ' ' + el.z + '\n');
+        // });
+        // let element = document.createElement('a');
+        // let file = new Blob(this.state.probingString, { type: 'text/plain' });
+        // element.href = URL.createObjectURL(file);
+        // element.download = 'probedata.csv';
+        // element.click();
 
-        let element = document.createElement('a');
-        let file = new Blob(this.state.probingString, { type: 'text/plain' });
-        element.href = URL.createObjectURL(file);
-        element.download = 'probedata.csv';
-        element.click();
+        //const csv = this.state.probingMatrix.map(row => row.map(item => (typeof item === 'string' && item.indexOf(',') >= 0) ? `"${item}"` : String(item)).join(',')).join('\n');
+        //const data = encodeURI('data:text/csv;charset=utf-8,' + csv);
+        fileContent = this.downloadableCSV(this.state.probingMatrix);
+        fileName = 'probedata.csv';
+        this.download(fileContent, fileName, 'text/plain');
     }
 
     simulateProbing = () => {
-        let r = 80;
-        let x0 = -75;
-        let y0 = -75;
-        let z0 = -30;
+        let row = [];
+        let simProbingObj = [];
+        let r = 30;
+        let x0 = 30;
+        let y0 = 30;
+        let z0 = -20;
         let cz = 0;
-        const xmin = -150;
-        const xmax = 0;
-        const ymin = -150;
-        const ymax = 0;
+        const xmin = 10;
+        const xmax = 50;
+        const ymin = 10;
+        const ymax = 50;
         for (let y = ymin; y <= ymax; y += 10) {
             for (let x = xmin; x <= xmax; x += 10) {
                 let sx = x;
@@ -84,15 +103,23 @@ class AutoLevel extends PureComponent {
                 }
                 let sz = 3;
                 //log.info('AutoLevel x y z: ' + sx + ' ' + sy + ' ' + cz);
-                this.state.probingObj.push({
+                simProbingObj.push({
                     x: sx,
                     y: sy,
                     z: cz,
                     pz: sz
                 });
+                row.push(cz);
             }
+            this.state.probingMatrix.push(row);
+            row = [];
         }
-        log.info('AutoLevel obj : ' + JSON.stringify(this.state.probingObj));
+        //log.info('AutoLevel obj : ' + JSON.stringify(this.state.probingObj));
+        //log.info('AutoLevel matrix : ' + JSON.stringify(this.state.probingMatrix));
+        this.setState({
+            probingObj: simProbingObj,
+            referenceZ: 0.0
+        });
     }
 
     render() {
@@ -123,7 +150,7 @@ class AutoLevel extends PureComponent {
         }];
 
         if (Object.prototype.hasOwnProperty.call(state, 'probingData')) {
-            //log.error('AutoLevel :' + JSON.stringify(state));
+            //log.info('AutoLevel :' + JSON.stringify(state));
             //log.error('AutoLevel :' + JSON.stringify(state.probingData));
             //log.error('AutoLevel :' + JSON.stringify(state.probingData.result));
             if (state.probingData.printed === false) {
