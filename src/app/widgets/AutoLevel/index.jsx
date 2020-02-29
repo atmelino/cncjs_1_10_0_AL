@@ -79,7 +79,7 @@ class AutoLevelWidget extends PureComponent {
         },
         openModal2: (name = MODAL_NONE, params = {}) => {
             log.setLevel(TRACE);
-            log.log(INFO, 'AutoLevel/index.jsx openModal2');
+            //log.log(INFO, 'AutoLevel/index.jsx openModal2');
             this.setState({
                 modal: {
                     name: name,

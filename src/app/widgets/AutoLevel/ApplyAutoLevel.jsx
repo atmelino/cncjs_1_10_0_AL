@@ -34,13 +34,13 @@ class ApplyAutoLevel extends PureComponent {
 
     handleClickUpload = (param) => {
         this.choice = param;
-        log.log(INFO, 'ApplyAutoLevel.jsx handleClickUpload choice=' + this.choice);
+        //log.log(INFO, 'ApplyAutoLevel.jsx handleClickUpload choice=' + this.choice);
         this.fileInputEl.value = null;
         this.fileInputEl.click();
     };
 
     handleLoadFile = (event) => {
-        log.log(INFO, 'ApplyAutoLevel.jsx handleLoadFile choice=' + this.choice);
+        //log.log(INFO, 'ApplyAutoLevel.jsx handleLoadFile choice=' + this.choice);
         const { actions } = this.props;
         const files = event.target.files;
         const file = files[0];
@@ -116,8 +116,8 @@ class ApplyAutoLevel extends PureComponent {
 
             let abs = true;
             let result = [];
-            lines.forEach(line => {
-                //log.log(INFO, 'ApplyAutoLevel.jsx applyCompensation process line' + line);
+            lines.forEach((line, index) => {
+                log.log(INFO, 'ApplyAutoLevel.jsx applyCompensation line ' + index + '\n' + line);
                 let lineStripped = this.stripComments(line);
                 if (!/(X|Y|Z)/gi.test(lineStripped)) {
                     result.push(lineStripped); // no coordinate change --> copy to output
