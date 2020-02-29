@@ -20,7 +20,6 @@ class AutoLevel extends PureComponent {
         super(props);
         this.state = {
             probingObj: [],
-            probingString: [],
             probingMatrix: [],
             referenceZ: 0.0
         };
@@ -30,19 +29,16 @@ class AutoLevel extends PureComponent {
         log.info('AutoLevel clearGrid');
         this.setState({
             probingObj: [],
-            probingString: [],
+            probingMatrix: [],
             referenceZ: 0.0
         });
     };
 
     downloadableCSV = (rows) => {
         let content = '';
-
         rows.forEach((row, index) => {
             content += row.join(',') + '\n';
         });
-
-        //return encodeURI(content);
         return content;
     }
 
@@ -60,17 +56,6 @@ class AutoLevel extends PureComponent {
         log.log(INFO, 'AutoLevel fileContent=' + fileContent);
         this.download(fileContent, fileName, 'text/plain');
 
-        // this.state.probingObj.forEach(el => {
-        //     this.state.probingString.push(el.x + ' ' + el.y + ' ' + el.z + '\n');
-        // });
-        // let element = document.createElement('a');
-        // let file = new Blob(this.state.probingString, { type: 'text/plain' });
-        // element.href = URL.createObjectURL(file);
-        // element.download = 'probedata.csv';
-        // element.click();
-
-        //const csv = this.state.probingMatrix.map(row => row.map(item => (typeof item === 'string' && item.indexOf(',') >= 0) ? `"${item}"` : String(item)).join(',')).join('\n');
-        //const data = encodeURI('data:text/csv;charset=utf-8,' + csv);
         fileContent = this.downloadableCSV(this.state.probingMatrix);
         fileName = 'probedata.csv';
         this.download(fileContent, fileName, 'text/plain');
@@ -79,17 +64,19 @@ class AutoLevel extends PureComponent {
     simulateProbing = () => {
         let row = [];
         let simProbingObj = [];
-        let r = 30;
-        let x0 = 30;
-        let y0 = 30;
-        let z0 = -20;
+        let r = 70;
+        let x0 = 50;
+        let y0 = 50;
+        let z0 = -56;
         let cz = 0;
-        const xmin = 10;
-        const xmax = 50;
-        const ymin = 10;
-        const ymax = 50;
-        for (let y = ymin; y <= ymax; y += 10) {
-            for (let x = xmin; x <= xmax; x += 10) {
+        const xmin = 0;
+        const stepX = 20;
+        const xmax = 100;
+        const ymin = 0;
+        const stepY = 20;
+        const ymax = 100;
+        for (let y = ymin; y <= ymax; y += stepY) {
+            for (let x = xmin; x <= xmax; x += stepX) {
                 let sx = x;
                 let sy = y;
                 let sq1 = r * r - (x - x0) * (x - x0) - (y - y0) * (y - y0);
@@ -168,8 +155,6 @@ class AutoLevel extends PureComponent {
                 }
 
                 // correct new z entry for autolevel plane
-                //var cz = numeral(0.0).format('0.000');
-                //log.error('AutoLevel new reference: ' + this.state.referenceZ);
                 log.info('AutoLevel new reference: ' + this.state.referenceZ);
                 let PRBz = Number(sz);
                 let corz = PRBz - this.state.referenceZ; // corrected z
@@ -216,7 +201,7 @@ class AutoLevel extends PureComponent {
                     </div>
                 </div>
                 <div className="row no-gutters">
-                    <div className="col-sm-4">
+                    <div className="col-sm-5">
                         <button
                             type="button"
                             className="btn btn-sm btn-default"
@@ -228,7 +213,7 @@ class AutoLevel extends PureComponent {
                             Make Probe File
                         </button>
                     </div>
-                    <div className="col-sm-4">
+                    <div className="col-sm-5">
                         <button
                             type="button"
                             className="btn btn-sm btn-default"

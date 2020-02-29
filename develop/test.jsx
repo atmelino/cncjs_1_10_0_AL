@@ -1,5 +1,48 @@
 
 
+
+
+                    <div className="row row-no-gutters">
+                    <div className="col-sm-4">
+                        <label className="control-label">{i18n._('Step')}</label>
+                    </div>
+                    <div className="col-sm-8">
+                        <div className="input-group input-group-sm">
+                            <input
+                                type="number"
+                                className="form-control"
+                                value={this.state.step}
+                                placeholder="0.00"
+                                min={0}
+                                step={step}
+                                onChange={actions.handleStartXChange}
+                            />
+                            <div className="input-group-addon">{displayUnits}</div>
+                        </div>
+                    </div>
+                </div>
+
+
+                    <div className="row row-no-gutters">
+                    <div className="col-sm-4">
+                        <label className="control-label">{i18n._('Maximum Segment Length')}</label>
+                    </div>
+                    <div className="col-sm-8">
+                        <div className="input-group input-group-sm">
+                            <input
+                                type="number"
+                                className="form-control"
+                                value={startX}
+                                placeholder="0.00"
+                                min={-200}
+                                step={step}
+                                onChange={actions.handleStartXChange}
+                            />
+                            <div className="input-group-addon">{displayUnits}</div>
+                        </div>
+                    </div>
+                </div>
+
                     <div className="row row-no-gutters">
                         <input
                             type="file"

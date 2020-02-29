@@ -5,6 +5,7 @@ import Modal from 'app/components/Modal';
 import i18n from 'app/lib/i18n';
 import { TRACE, DEBUG, INFO, WARN, ERROR } from 'universal-logger';
 import log from '../../lib/log';
+import { TINYG_MACHINE_STATE_ALARM } from '../../constants';
 
 class ApplyAutoLevel extends PureComponent {
     static propTypes = {
@@ -14,13 +15,9 @@ class ApplyAutoLevel extends PureComponent {
 
     state = {
         probingFileName: '- none -',
+        step: 0,
         gcodeFileName: '- none -',
     }
-
-    fields = {
-        name: null,
-        password: null
-    };
 
     alFileNamePrefix = '#AL:'
 
@@ -32,15 +29,17 @@ class ApplyAutoLevel extends PureComponent {
 
     fileInputEl = null;
 
+    delta = 10;
+
     handleClickUpload = (param) => {
         this.choice = param;
-        //log.log(INFO, 'ApplyAutoLevel.jsx handleClickUpload choice=' + this.choice);
+        //log.info( 'ApplyAutoLevel handleClickUpload choice=' + this.choice);
         this.fileInputEl.value = null;
         this.fileInputEl.click();
     };
 
     handleLoadFile = (event) => {
-        //log.log(INFO, 'ApplyAutoLevel.jsx handleLoadFile choice=' + this.choice);
+        //log.info( 'ApplyAutoLevel handleLoadFile choice=' + this.choice);
         const { actions } = this.props;
         const files = event.target.files;
         const file = files[0];
@@ -76,31 +75,34 @@ class ApplyAutoLevel extends PureComponent {
         try {
             reader.readAsText(file);
         } catch (err) {
-            log.error('ApplyAutoLevel.jsx handleLoadFile error reading file');
+            log.error('ApplyAutoLevel handleLoadFile error reading file');
         }
     };
 
     readProbingFile = (contents) => {
-        //log.log(INFO, 'ApplyAutoLevel.jsx readProbingFile result \n' + contents);
-        // this.probedPoints = [];
+        //log.info( 'ApplyAutoLevel readProbingFile result \n' + contents);
         this.probedPoints = JSON.parse(contents);
-        log.log(INFO, 'ApplyAutoLevel.jsx readProbingFile probedPoints \n' + JSON.stringify(this.probedPoints));
-        //log.log(INFO, 'ApplyAutoLevel.jsx readProbingFile probedPoints length \n' + this.probedPoints.length);
-        //log.log(INFO, 'ApplyAutoLevel.jsx readProbingFile probedPoints[3].z \n' + this.probedPoints[3].z);
+        this.delta = this.probedPoints[1].x - this.probedPoints[0].x;
+        log.info('ApplyAutoLevel step=' + this.delta);
+        this.setState({ step: this.delta });
+
+        //log.info('ApplyAutoLevel readProbingFile probedPoints \n' + JSON.stringify(this.probedPoints));
+        //log.info( 'ApplyAutoLevel readProbingFile probedPoints length \n' + this.probedPoints.length);
+        //log.info( 'ApplyAutoLevel readProbingFile probedPoints[3].z \n' + this.probedPoints[3].z);
     }
 
     readGcodeFile = (contents) => {
-        log.log(INFO, 'ApplyAutoLevel.jsx gcodeFile  \n' + contents);
+        //log.info('ApplyAutoLevel gcodeFile  \n' + contents);
         this.gcode = contents;
     }
 
     autolevel = (contents) => {
-        log.log(INFO, 'ApplyAutoLevel.jsx autolevel \n');
+        log.info('ApplyAutoLevel autolevel \n');
         this.applyCompensation();
     }
 
     applyCompensation() {
-        log.log(INFO, 'ApplyAutoLevel.jsx applyCompensation AL: applying compensation ...\n');
+        log.info('ApplyAutoLevel applyCompensation AL: applying compensation ...\n');
         try {
             let lines = this.gcode.split('\n');
             let p0 = {
@@ -117,12 +119,12 @@ class ApplyAutoLevel extends PureComponent {
             let abs = true;
             let result = [];
             lines.forEach((line, index) => {
-                log.log(INFO, 'ApplyAutoLevel.jsx applyCompensation line ' + index + '\n' + line);
+                //log.info('ApplyAutoLevel applyCompensation line ' + index + '\n' + line);
                 let lineStripped = this.stripComments(line);
                 if (!/(X|Y|Z)/gi.test(lineStripped)) {
                     result.push(lineStripped); // no coordinate change --> copy to output
                 } else {
-                    //log.log(INFO, 'else');
+                    //log.info( 'else');
                     let f = 1;
                     if (/(G38.+|G5.+|G10|G2.+|G4.+|G92|G92.1)/gi.test(lineStripped)) {
                         result.push(lineStripped); // skip compensation for these G-Codes
@@ -157,7 +159,7 @@ class ApplyAutoLevel extends PureComponent {
                             }
                         } else {
                             result.push(lineStripped);
-                            log.log(INFO, 'WARNING: using relative mode may not produce correct results');
+                            log.info('WARNING: using relative mode may not produce correct results');
                         }
                         p0 = {
                             x: pt.x,
@@ -168,17 +170,17 @@ class ApplyAutoLevel extends PureComponent {
                 }
             });
             const newgcodeFileName = this.alFileNamePrefix + this.state.gcodeFileName;
-            //log.log(INFO, 'ApplyAutoLevel.jsx applyCompensation AL: loading new gcode' + newgcodeFileName);
-            log.log(INFO, 'ApplyAutoLevel.jsx applyCompensation AL: new gcode' + result.join('\n'));
+            //log.info( 'ApplyAutoLevel applyCompensation AL: loading new gcode' + newgcodeFileName);
+            //log.info('ApplyAutoLevel applyCompensation AL: new gcode' + result.join('\n'));
             //this.sckw.loadGcode(newgcodeFileName, result.join('\n'))
-            log.log(INFO, 'ApplyAutoLevel.jsx applyCompensation AL: finished');
+            log.info('ApplyAutoLevel applyCompensation AL: finished');
             let fileName = newgcodeFileName;
             let fileContent = result.join('\n');
             this.download(fileContent, fileName, 'text/plain');
         } catch (x) {
-            log.log(INFO, 'ApplyAutoLevel.jsx applyCompensation AL: error occurred' + x);
+            log.info('ApplyAutoLevel applyCompensation AL: error occurred' + x);
         }
-        log.log(INFO, 'ApplyAutoLevel.jsx applyCompensation Leveling applied\n');
+        log.info('ApplyAutoLevel applyCompensation Leveling applied\n');
     }
 
     download = (content, fileName, contentType) => {
@@ -229,6 +231,7 @@ class ApplyAutoLevel extends PureComponent {
     }
 
     splitToSegments(p1, p2) {
+        //log.info('ApplyAutoLevel delta=' + this.delta);
         let res = [];
         let v = this.sub3(p2, p1); // delta
         let dist = Math.sqrt(this.distanceSquared3(p1, p2)); // distance
@@ -238,6 +241,7 @@ class ApplyAutoLevel extends PureComponent {
             z: v.z / dist
         }; // direction vector
         let maxSegLength = this.delta / 2;
+        //log.info('ApplyAutoLevel maxSegLength=' + maxSegLength);
         res.push({
             x: p1.x,
             y: p1.y,
@@ -255,6 +259,7 @@ class ApplyAutoLevel extends PureComponent {
             y: p2.y,
             z: p2.z
         }); // last point
+        //log.info('ApplyAutoLevel res:' + JSON.stringify(res));
         return res;
     }
 
@@ -306,8 +311,10 @@ class ApplyAutoLevel extends PureComponent {
     render() {
         const { state, actions } = this.props;
         const { startX, endX, startY, endY, stepX, stepY, feedXY, feedZ, depth, height } = state;
+        const displayUnits = i18n._('mm');
+        const step = 1;
         //log.setLevel(TRACE);
-        //log.log(INFO, 'MakeProbeFile render:' + JSON.stringify(state));
+        //log.info( 'MakeProbeFile render:' + JSON.stringify(state));
 
         return (
             <Modal disableOverlay size="sm" onClose={actions.closeModal}>
@@ -365,7 +372,6 @@ class ApplyAutoLevel extends PureComponent {
                             >
                                 {i18n._('Select')}
                             </button>
-
                         </div>
                     </div>
                 </Modal.Body>
