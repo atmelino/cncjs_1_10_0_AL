@@ -16,14 +16,19 @@ class AutoLevel extends PureComponent {
         actions: PropTypes.object
     };
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            probingObj: [],
-            probingMatrix: [],
-            referenceZ: 0.0
-        };
-    }
+    // constructor(props) {
+    //     super(props);
+    //     this.state = {
+    //         probingObj: [],
+    //         probingMatrix: [],
+    //         referenceZ: 0.0
+    //     };
+    // }
+    state = {
+        probingObj: [],
+        probingMatrix: [],
+        referenceZ: 0.0
+    };
 
     clearGrid = () => {
         log.info('AutoLevel clearGrid');
@@ -62,21 +67,20 @@ class AutoLevel extends PureComponent {
     }
 
     simulateProbing = () => {
+        const { state, actions } = this.props;
+        const { startX, endX, startY, endY, stepX, stepY } = state;
+        // log.info('simulateProbing state : ' + JSON.stringify(state));
+        log.info('simulateProbing startX, endX, startY, endY, stepX, stepY : ' + startX + ' ' + endX + ' ' + startY + ' ' + endY + ' ' + stepX + ' ' + stepY);
         let row = [];
         let simProbingObj = [];
         let r = 70;
-        let x0 = -50;
-        let y0 = 50;
+        let x0 = (endX + startX) / 2;
+        let y0 = (endY + startY) / 2;
+        log.info('simulateProbing x0,y0: ' + x0 + ' ' + y0);
         let z0 = -56;
-        const xmin = -100;
-        const xmax = 0;
-        const stepX = 10;
-        const ymin = 0;
-        const ymax = 100;
-        const stepY = 10;
         let cz = 0;
-        for (let y = ymin; y <= ymax; y += stepY) {
-            for (let x = xmin; x <= xmax; x += stepX) {
+        for (let y = startY; y <= endY; y += stepY) {
+            for (let x = startX; x <= endX; x += stepX) {
                 let sx = x;
                 let sy = y;
                 let sq1 = r * r - (x - x0) * (x - x0) - (y - y0) * (y - y0);
@@ -101,7 +105,7 @@ class AutoLevel extends PureComponent {
             this.state.probingMatrix.push(row);
             row = [];
         }
-        //log.info('AutoLevel obj : ' + JSON.stringify(this.state.probingObj));
+        log.info('AutoLevel simProbingObj : ' + JSON.stringify(simProbingObj));
         //log.info('AutoLevel matrix : ' + JSON.stringify(this.state.probingMatrix));
         this.setState({
             probingObj: simProbingObj,

@@ -95,17 +95,17 @@ class AutoLevelWidget extends PureComponent {
                 }
             });
         },
-        updateModalParams: (params = {}) => {
-            this.setState({
-                modal: {
-                    ...this.state.modal,
-                    params: {
-                        ...this.state.modal.params,
-                        ...params
-                    }
-                }
-            });
-        },
+        // updateModalParams: (params = {}) => {
+        //     this.setState({
+        //         modal: {
+        //             ...this.state.modal,
+        //             params: {
+        //                 ...this.state.modal.params,
+        //                 ...params
+        //             }
+        //         }
+        //     });
+        // },
         handleLoadFile: (event) => {
             log.log(INFO, 'AutoLevel/index.jsx handleLoadFile');
             //this.handleChangeFile();
