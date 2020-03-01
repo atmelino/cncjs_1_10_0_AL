@@ -65,16 +65,16 @@ class AutoLevel extends PureComponent {
         let row = [];
         let simProbingObj = [];
         let r = 70;
-        let x0 = 50;
+        let x0 = -50;
         let y0 = 50;
         let z0 = -56;
-        let cz = 0;
-        const xmin = 0;
-        const stepX = 20;
-        const xmax = 100;
+        const xmin = -100;
+        const xmax = 0;
+        const stepX = 10;
         const ymin = 0;
-        const stepY = 20;
         const ymax = 100;
+        const stepY = 10;
+        let cz = 0;
         for (let y = ymin; y <= ymax; y += stepY) {
             for (let x = xmin; x <= xmax; x += stepX) {
                 let sx = x;
