@@ -552,5 +552,6 @@
     "Select": "Select",
     "Upload Probing Data": "Upload Probing Data",
     "Probing Data:": "Probing Data:",
-    "Original G-Code:": "Original G-Code:"
+    "Original G-Code:": "Original G-Code:",
+    "Load G-Code": "Load G-Code"
 }

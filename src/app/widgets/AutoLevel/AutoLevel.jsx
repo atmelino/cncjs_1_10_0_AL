@@ -4,6 +4,7 @@ import numeral from 'numeral';
 import ReactTable from 'react-table';
 import './react-table.css';
 import log from '../../lib/log';
+
 import {
     MODAL_PREVIEW,
     MODAL_PREVIEW2

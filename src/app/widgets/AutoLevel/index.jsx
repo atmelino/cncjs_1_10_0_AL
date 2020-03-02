@@ -15,6 +15,7 @@ import WidgetConfig from '../WidgetConfig';
 import AutoLevel from './AutoLevel';
 import MakeProbeFile from './MakeProbeFile';
 import ApplyAutoLevel from './ApplyAutoLevel';
+import VisualizerWidget from '../Visualizer';
 import {
     // Units
     IMPERIAL_UNITS,
@@ -193,6 +194,7 @@ class AutoLevelWidget extends PureComponent {
         loadProbingGcode: (commands) => {
             log.info('AutoLevel/index.jsx loadProbingGcode');
             this.makeProbeFileCommands();
+            VisualizerWidget.actions.uploadFile(this.probingGcode);
         },
         saveProbingGcode: (commands) => {
             log.info('AutoLevel/index.jsx saveProbingGcode');
