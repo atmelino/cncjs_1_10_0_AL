@@ -3,7 +3,6 @@ import pick from 'lodash/pick';
 import React, { PureComponent } from 'react';
 import Modal from 'app/components/Modal';
 import i18n from 'app/lib/i18n';
-import { TRACE, DEBUG, INFO, WARN, ERROR } from 'universal-logger';
 import log from '../../lib/log';
 import { TINYG_MACHINE_STATE_ALARM } from '../../constants';
 
@@ -313,8 +312,7 @@ class ApplyAutoLevel extends PureComponent {
         const { startX, endX, startY, endY, stepX, stepY, feedXY, feedZ, depth, height } = state;
         const displayUnits = i18n._('mm');
         const step = 1;
-        //log.setLevel(TRACE);
-        //log.info( 'MakeProbeFile render:' + JSON.stringify(state));
+        //log.info( 'ApplyAutoLevel render:' + JSON.stringify(state));
 
         return (
             <Modal disableOverlay size="sm" onClose={actions.closeModal}>

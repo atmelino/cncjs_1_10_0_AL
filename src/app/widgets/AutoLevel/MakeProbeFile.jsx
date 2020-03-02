@@ -2,7 +2,6 @@ import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
 import Modal from 'app/components/Modal';
 import i18n from 'app/lib/i18n';
-import { TRACE, DEBUG, INFO, WARN, ERROR } from 'universal-logger';
 import log from '../../lib/log';
 
 class MakeProbeFile extends PureComponent {
@@ -14,9 +13,7 @@ class MakeProbeFile extends PureComponent {
     render() {
         const { state, actions } = this.props;
         const { startX, endX, startY, endY, stepX, stepY, feedXY, feedZ, depth, height } = state;
-        //log.setLevel(TRACE);
-        //log.log(INFO, 'MakeProbeFile render:' + JSON.stringify(state));
-
+        //log.info( 'MakeProbeFile render:' + JSON.stringify(state));
         const displayUnits = i18n._('mm');
         const step = 1;
 
@@ -212,7 +209,17 @@ class MakeProbeFile extends PureComponent {
                         className="btn btn-primary"
                         onClick={() => {
                             actions.closeModal();
-                            actions.makeProbeFileCommands('hello');
+                            actions.loadProbingGcode('hello');
+                        }}
+                    >
+                        {i18n._('Load G-Code')}
+                    </button>
+                    <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={() => {
+                            actions.closeModal();
+                            actions.saveProbingGcode('hello');
                         }}
                     >
                         {i18n._('Make File')}

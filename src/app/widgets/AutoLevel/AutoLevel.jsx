@@ -3,7 +3,6 @@ import React, { PureComponent } from 'react';
 import numeral from 'numeral';
 import ReactTable from 'react-table';
 import './react-table.css';
-import { TRACE, DEBUG, INFO, WARN, ERROR } from 'universal-logger';
 import log from '../../lib/log';
 import {
     MODAL_PREVIEW,
@@ -16,14 +15,6 @@ class AutoLevel extends PureComponent {
         actions: PropTypes.object
     };
 
-    // constructor(props) {
-    //     super(props);
-    //     this.state = {
-    //         probingObj: [],
-    //         probingMatrix: [],
-    //         referenceZ: 0.0
-    //     };
-    // }
     state = {
         probingObj: [],
         probingMatrix: [],
@@ -58,7 +49,7 @@ class AutoLevel extends PureComponent {
     handleClickSave = () => {
         let fileName = Date.now() + 'probedata.rpf';
         let fileContent = JSON.stringify(this.state.probingObj);
-        log.log(INFO, 'AutoLevel fileContent=' + fileContent);
+        //log.info('AutoLevel fileContent=' + fileContent);
         this.download(fileContent, fileName, 'text/plain');
 
         fileContent = this.downloadableCSV(this.state.probingMatrix);
@@ -69,14 +60,14 @@ class AutoLevel extends PureComponent {
     simulateProbing = () => {
         const { state, actions } = this.props;
         const { startX, endX, startY, endY, stepX, stepY } = state;
-        // log.info('simulateProbing state : ' + JSON.stringify(state));
-        log.info('simulateProbing startX, endX, startY, endY, stepX, stepY : ' + startX + ' ' + endX + ' ' + startY + ' ' + endY + ' ' + stepX + ' ' + stepY);
+        // log.info('AutoLevel simulateProbing state : ' + JSON.stringify(state));
+        log.info('AutoLevel simulateProbing startX, endX, startY, endY, stepX, stepY : ' + startX + ' ' + endX + ' ' + startY + ' ' + endY + ' ' + stepX + ' ' + stepY);
         let row = [];
         let simProbingObj = [];
         let r = 70;
         let x0 = (endX + startX) / 2;
         let y0 = (endY + startY) / 2;
-        log.info('simulateProbing x0,y0: ' + x0 + ' ' + y0);
+        log.info(' AutoLevel simulateProbing x0,y0: ' + x0 + ' ' + y0);
         let z0 = -56;
         let cz = 0;
         for (let y = startY; y <= endY; y += stepY) {
@@ -105,7 +96,7 @@ class AutoLevel extends PureComponent {
             this.state.probingMatrix.push(row);
             row = [];
         }
-        log.info('AutoLevel simProbingObj : ' + JSON.stringify(simProbingObj));
+        //log.info('AutoLevel simProbingObj : ' + JSON.stringify(simProbingObj));
         //log.info('AutoLevel matrix : ' + JSON.stringify(this.state.probingMatrix));
         this.setState({
             probingObj: simProbingObj,
@@ -114,8 +105,7 @@ class AutoLevel extends PureComponent {
     }
 
     render() {
-        log.setLevel(TRACE);
-        //log.log(INFO, './src/app/widgets/AutoLevel/AutoLevel render called');
+        //log.info( 'AutoLevel render called');
 
         //const { state } = this.props;
         const { state, actions } = this.props;
@@ -147,7 +137,7 @@ class AutoLevel extends PureComponent {
             if (state.probingData.printed === false) {
                 state.probingData.printed = true;
                 //log.error('AutoLevel result :' + JSON.stringify(state.probingData.result));
-                log.log(INFO, 'AutoLevel result :' + JSON.stringify(state.probingData.result));
+                log.info('AutoLevel result :' + JSON.stringify(state.probingData.result));
 
                 let sx = state.probingData.result.x;
                 let sy = state.probingData.result.y;
@@ -181,10 +171,10 @@ class AutoLevel extends PureComponent {
                     z: cz,
                     pz: sz
                 });
-                log.info('AutoLevel obj : ' + JSON.stringify(this.state.probingObj));
+                //log.info('AutoLevel probingObj : ' + JSON.stringify(this.state.probingObj));
             }
         }
-        //log.log(INFO, 'AutoLevel render before return');
+        //log.info( 'AutoLevel render before return');
 
         return (
             <div>
@@ -205,7 +195,7 @@ class AutoLevel extends PureComponent {
                     </div>
                 </div>
                 <div className="row no-gutters">
-                    <div className="col-sm-5">
+                    <div className="col-sm-6">
                         <button
                             type="button"
                             className="btn btn-sm btn-default"
@@ -214,10 +204,10 @@ class AutoLevel extends PureComponent {
                             }}
                             disabled={false}
                         >
-                            Make Probe File
+                            Probing Setup
                         </button>
                     </div>
-                    <div className="col-sm-5">
+                    <div className="col-sm-6">
                         <button
                             type="button"
                             className="btn btn-sm btn-default"
