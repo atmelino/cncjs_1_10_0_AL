@@ -4,6 +4,8 @@ import mapValues from 'lodash/mapValues';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { PureComponent } from 'react';
+import pubsub from 'pubsub-js';
+import api from 'app/api';
 import { TRACE, DEBUG, INFO, WARN, ERROR } from 'universal-logger';
 import log from '../../lib/log';
 import Space from '../../components/Space';
@@ -58,44 +60,6 @@ class AutoLevelWidget extends PureComponent {
 
     probingGcode = [];
 
-    makeProbeFileCommands = (commands) => {
-        //log.info( 'AutoLevel/index.jsx modal dialog closed, makeProbeFileCommands called');
-        //log.info( 'AutoLevel/index.jsx startX=' + this.state.startX);
-        //log.info('AutoLevel/index.jsx makeProbeFileCommands:' + JSON.stringify(this.state));
-        //let code = [];
-        let dx = (this.state.endX - this.state.startX) / parseInt((this.state.endX - this.state.startX) / this.state.stepX, 10);
-        let dy = (this.state.endY - this.state.startY) / parseInt((this.state.endY - this.state.startY) / this.state.stepY, 10);
-        this.probingGcode.push('(AL: probing initial point)\n');
-        this.probingGcode.push(`G0 Z${this.state.height}\n`);
-        this.probingGcode.push(`G90 G0 X${this.state.startX.toFixed(3)} Y${this.state.startY.toFixed(3)} Z${this.state.height}\n`);
-        this.probingGcode.push(`G38.2 Z-${this.state.depth} F${this.state.feedZ / 2}\n`);
-        //this.probingGcode.push('G10 L20 P1 Z0\n'); // set the z zero
-        this.probingGcode.push(`G0 Z${this.state.height}\n`);
-        let y = this.state.startY - dy;
-        while (y < this.state.endY - 0.01) {
-            y += dy;
-            if (y > this.state.endY) {
-                y = this.state.endY;
-            }
-            let x = this.state.startX - dx;
-            if (y <= this.state.startY + 0.01) {
-                x = this.state.startX;
-            } // don't probe first point twice
-            while (x < this.state.endX - 0.01) {
-                x += dx;
-                if (x > this.state.endX) {
-                    x = this.state.endX;
-                }
-                //this.probingGcode.push(`(AL: probing point ${this.state.planedPointCount + 1})`);
-                this.probingGcode.push(`G90 G0 X${x.toFixed(3)} Y${y.toFixed(3)} F${this.state.feedXY}\n`);
-                this.probingGcode.push(`G38.2 Z-${this.state.depth} F${this.state.feedZ}\n`);
-                this.probingGcode.push(`G0 Z${this.state.height}\n`);
-            }
-        }
-        //log.info( 'AutoLevel/index.jsx makeProbeFileCommands:' + JSON.stringify(this.probingGcode));
-        //log.info( 'AutoLevel/index.jsx makeProbeFileCommands:' + this.probingGcode.join('\n'));
-    }
-
     actions = {
         toggleFullscreen: () => {
             const { minimized, isFullscreen } = this.state;
@@ -110,6 +74,7 @@ class AutoLevelWidget extends PureComponent {
         },
         openModal: (name = MODAL_NONE, params = {}) => {
             log.info('AutoLevel/index.jsx before dialog startX=' + this.state.startX);
+            this.probingGcode = [];
             this.setState({
                 modal: {
                     name: name,
@@ -192,9 +157,23 @@ class AutoLevelWidget extends PureComponent {
             this.setState({ height: parseInt(height, 10) });
         },
         loadProbingGcode: (commands) => {
-            log.info('AutoLevel/index.jsx loadProbingGcode');
             this.makeProbeFileCommands();
-            VisualizerWidget.actions.uploadFile(this.probingGcode);
+            const gcode = this.probingGcode.join('');
+            const name = 'something';
+            const { port } = this.state;
+            //log.info('AutoLevel/index.jsx gcode' + gcode);
+            api.loadGCode({ port, name, gcode })
+                .then((res) => {
+                    const { name = '', gcode = '' } = { ...res.body };
+                    pubsub.publish('gcode:load', { name, gcode });
+                })
+                .catch((res) => {
+                    log.error('Failed to upload G-code file');
+                })
+                .then(() => {
+                    //stopWaiting();
+                    this.setState({ isUploading: false });
+                });
         },
         saveProbingGcode: (commands) => {
             log.info('AutoLevel/index.jsx saveProbingGcode');
@@ -207,12 +186,53 @@ class AutoLevelWidget extends PureComponent {
         }
     };
 
+    makeProbeFileCommands = (commands) => {
+        //log.info( 'AutoLevel/index.jsx modal dialog closed, makeProbeFileCommands called');
+        //log.info( 'AutoLevel/index.jsx startX=' + this.state.startX);
+        //log.info('AutoLevel/index.jsx makeProbeFileCommands:' + JSON.stringify(this.state));
+        //let code = [];
+        let dx = (this.state.endX - this.state.startX) / parseInt((this.state.endX - this.state.startX) / this.state.stepX, 10);
+        let dy = (this.state.endY - this.state.startY) / parseInt((this.state.endY - this.state.startY) / this.state.stepY, 10);
+        this.probingGcode.push('(AL: probing initial point)\n');
+        this.probingGcode.push(`G0 Z${this.state.height}\n`);
+        this.probingGcode.push(`G90 G0 X${this.state.startX.toFixed(3)} Y${this.state.startY.toFixed(3)} Z${this.state.height}\n`);
+        this.probingGcode.push(`G38.2 Z-${this.state.depth} F${this.state.feedZ / 2}\n`);
+        //this.probingGcode.push('G10 L20 P1 Z0\n'); // set the z zero
+        this.probingGcode.push(`G0 Z${this.state.height}\n`);
+        let y = this.state.startY - dy;
+        while (y < this.state.endY - 0.01) {
+            y += dy;
+            if (y > this.state.endY) {
+                y = this.state.endY;
+            }
+            let x = this.state.startX - dx;
+            if (y <= this.state.startY + 0.01) {
+                x = this.state.startX;
+            } // don't probe first point twice
+            while (x < this.state.endX - 0.01) {
+                x += dx;
+                if (x > this.state.endX) {
+                    x = this.state.endX;
+                }
+                //this.probingGcode.push(`(AL: probing point ${this.state.planedPointCount + 1})`);
+                this.probingGcode.push(`G90 G0 X${x.toFixed(3)} Y${y.toFixed(3)} F${this.state.feedXY}\n`);
+                this.probingGcode.push(`G38.2 Z-${this.state.depth} F${this.state.feedZ}\n`);
+                this.probingGcode.push(`G0 Z${this.state.height}\n`);
+            }
+        }
+        //log.info('AutoLevel/index.jsx makeProbeFileCommands:' + JSON.stringify(this.probingGcode));
+        //log.info('AutoLevel/index.jsx makeProbeFileCommands:' + this.probingGcode.join(''));
+    }
+
     controllerEvents = {
         // atmelino
         'prbevent': (payload) => {
             //const { mypayload } = payload;
             //this.setState({ payload: payload });
-            log.error('AutoLevel Probing prbevent');
+            log.info('AutoLevel/index Probing prbevent');
+        },
+        'gcode:load': (name, gcode, context) => {
+            log.info('AutoLevel/index gcode:load event');
         },
         'serialport:read': (received) => {
             if (received.type === 'probing') {

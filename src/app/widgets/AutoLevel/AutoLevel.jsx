@@ -106,7 +106,7 @@ class AutoLevel extends PureComponent {
     }
 
     render() {
-        //log.info( 'AutoLevel render called');
+        // log.info('AutoLevel render called');
 
         //const { state } = this.props;
         const { state, actions } = this.props;

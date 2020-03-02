@@ -171,7 +171,6 @@ class ApplyAutoLevel extends PureComponent {
             const newgcodeFileName = this.alFileNamePrefix + this.state.gcodeFileName;
             //log.info( 'ApplyAutoLevel applyCompensation AL: loading new gcode' + newgcodeFileName);
             //log.info('ApplyAutoLevel applyCompensation AL: new gcode' + result.join('\n'));
-            //this.sckw.loadGcode(newgcodeFileName, result.join('\n'))
             log.info('ApplyAutoLevel applyCompensation AL: finished');
             let fileName = newgcodeFileName;
             let fileContent = result.join('\n');

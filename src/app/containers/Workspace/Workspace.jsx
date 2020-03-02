@@ -261,6 +261,7 @@ class Workspace extends PureComponent {
     };
 
     onDrop = (files) => {
+        log.info('Workspace onDrop file ' + files[0].name);
         const { port } = this.state;
 
         if (!port) {
@@ -443,7 +444,7 @@ class Workspace extends PureComponent {
                     />
                 )}
                 {modal.name === MODAL_SERVER_DISCONNECTED &&
-                <ServerDisconnected />
+                    <ServerDisconnected />
                 }
                 <div
                     className={classNames(

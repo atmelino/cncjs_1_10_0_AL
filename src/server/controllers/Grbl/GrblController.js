@@ -128,6 +128,7 @@ class GrblController {
     workflow = null;
 
     constructor(engine, options) {
+        log.debug('GrblController constructor');
         if (!engine) {
             throw new Error('engine must be specified');
         }
