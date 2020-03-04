@@ -414,6 +414,7 @@ class AutoLevelWidget extends PureComponent {
             ...this.actions
         };
         log.setLevel(INFO);
+        //log.info('AutoLevelWidget render:' + JSON.stringify(state));
 
         return (
             <Widget fullscreen={isFullscreen}>

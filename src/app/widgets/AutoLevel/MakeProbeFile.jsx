@@ -4,23 +4,6 @@ import React, { PureComponent } from 'react';
 import Modal from 'app/components/Modal';
 import i18n from 'app/lib/i18n';
 import log from '../../lib/log';
-import {
-    // Grbl
-    GRBL,
-    GRBL_ACTIVE_STATE_ALARM,
-    // Marlin
-    MARLIN,
-    // Smoothie
-    SMOOTHIE,
-    SMOOTHIE_ACTIVE_STATE_ALARM,
-    // TinyG
-    TINYG,
-    TINYG_MACHINE_STATE_ALARM,
-    // Workflow
-    WORKFLOW_STATE_IDLE,
-    WORKFLOW_STATE_PAUSED,
-    WORKFLOW_STATE_RUNNING
-} from '../../constants';
 
 class MakeProbeFile extends PureComponent {
     static propTypes = {
@@ -31,14 +14,10 @@ class MakeProbeFile extends PureComponent {
     render() {
         const { state, actions } = this.props;
         const { startX, endX, startY, endY, stepX, stepY, feedXY, feedZ, depth, height } = state;
-        //log.info( 'MakeProbeFile render:' + JSON.stringify(state));
+        const { canClick } = state;
+        //log.info('MakeProbeFile render:' + JSON.stringify(state));
         const displayUnits = i18n._('mm');
         const step = 1;
-        const { port, gcode, workflow } = state;
-        const canClick = !!port;
-        const isReady = canClick && gcode.ready;
-        const canClose = isReady && includes([WORKFLOW_STATE_IDLE], workflow.state);
-        const canUpload = isReady ? canClose : (canClick && !gcode.loading);
 
         return (
             <Modal disableOverlay size="sm" onClose={actions.closeModal}>
@@ -234,7 +213,7 @@ class MakeProbeFile extends PureComponent {
                             actions.closeModal();
                             actions.loadProbingGcode('hello');
                         }}
-                        disabled={!canUpload}
+                        disabled={!canClick}
                     >
                         {i18n._('Load G-Code')}
                     </button>
