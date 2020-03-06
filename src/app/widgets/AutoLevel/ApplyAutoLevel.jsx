@@ -182,8 +182,8 @@ class ApplyAutoLevel extends PureComponent {
     }
 
     download = (content, fileName, contentType) => {
-        var a = document.createElement('a');
-        var file = new Blob([content], { type: contentType });
+        let a = document.createElement('a');
+        let file = new Blob([content], { type: contentType });
         a.href = URL.createObjectURL(file);
         a.download = fileName;
         a.click();
@@ -287,7 +287,7 @@ class ApplyAutoLevel extends PureComponent {
     compensateZCoord(pt) {
         let points = this.getThreeClosestPoints(pt);
         if (points.length < 3) {
-            console.log('Cant find 3 closest points');
+            log.error('Cant find 3 closest points');
             return pt;
         }
         let normal = this.crossProduct3(this.sub3(points[1], points[0]), this.sub3(points[2], points[0]));
@@ -297,7 +297,7 @@ class ApplyAutoLevel extends PureComponent {
             // find z at the point seg, on the plane defined by three points
             dz = pp.z - (normal.x * (pt.x - pp.x) + normal.y * (pt.y - pp.y)) / normal.z;
         } else {
-            console.log(this.formatPt(pt), 'normal.z is zero', this.formatPt(points[0]), this.formatPt(points[1]), this.formatPt(points[2]));
+            log.error(this.formatPt(pt), 'normal.z is zero', this.formatPt(points[0]), this.formatPt(points[1]), this.formatPt(points[2]));
         }
         return {
             x: pt.x,
@@ -308,9 +308,8 @@ class ApplyAutoLevel extends PureComponent {
 
     render() {
         const { state, actions } = this.props;
-        const { startX, endX, startY, endY, stepX, stepY, feedXY, feedZ, depth, height } = state;
-        const displayUnits = i18n._('mm');
-        const step = 1;
+        const { canClick } = state;
+
         //log.info( 'ApplyAutoLevel render:' + JSON.stringify(state));
 
         return (
@@ -330,45 +329,79 @@ class ApplyAutoLevel extends PureComponent {
                         multiple={false}
                         onChange={this.handleLoadFile}
                     />
-                    <div className="row row-no-gutters">
-                        <div className="col-sm-2">
-                            <label className="control-label">{i18n._('Probing Data:')}</label>
-                        </div>
-                        <div className="col-sm-8">
-                            <label className="control-label">
-                                {this.state.probingFileName}
+
+                    <div className="form-group">
+                        <label><strong>{i18n._('Probing Data:')}</strong></label>
+                        <div className="radio" style={{ marginTop: 0 }}>
+                            <label>
+                                <input
+                                    type="radio"
+                                    name="mediaSource"
+                                    value={3}
+                                    checked={true}
+                                    onChange={this.handleLoadFile}
+                                />
+                                {i18n._('Use current probing data')}
                             </label>
                         </div>
-                        <div className="col-sm-2">
-                            <button
-                                type="button"
-                                className="btn btn-default"
-                                title={i18n._('Upload Probing Data')}
-                                onClick={() => this.handleClickUpload(1)}
-                            >
-                                {i18n._('Select')}
-                            </button>
-
+                        <div className="radio">
+                            <label>
+                                <input
+                                    type="radio"
+                                    name="mediaSource"
+                                    value={1}
+                                    checked={false}
+                                    onChange={this.handleLoadFile}
+                                />
+                                {i18n._('Use a file')}
+                            </label>
+                        </div>
+                        <div className="row row-no-gutters">
+                            <div style={{ marginLeft: 20 }}>
+                                <div className="col-sm-10">
+                                    <input
+                                        type="url"
+                                        className="form-control"
+                                        disabled={true}
+                                        placeholder={this.state.probingFileName}
+                                        onChange={this.handleChangeURL}
+                                    />
+                                </div>
+                                <div className="col-sm-2">
+                                    <button
+                                        type="button"
+                                        className="btn btn-default"
+                                        title={i18n._('Upload Probing Data')}
+                                        onClick={() => this.handleClickUpload(1)}
+                                    >
+                                        {i18n._('Select')}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    <label><strong>{i18n._('Original G-Code:')}</strong></label>
                     <div className="row row-no-gutters">
-                        <div className="col-sm-2">
-                            <label className="control-label">{i18n._('Original G-Code:')}</label>
-                        </div>
-                        <div className="col-sm-8">
-                            <label className="control-label">
-                                {this.state.gcodeFileName}
-                            </label>
-                        </div>
-                        <div className="col-sm-2">
-                            <button
-                                type="button"
-                                className="btn btn-default"
-                                title={i18n._('Upload G-code')}
-                                onClick={() => this.handleClickUpload(2)}
-                            >
-                                {i18n._('Select')}
-                            </button>
+                        <div style={{ marginLeft: 20 }}>
+                            <div className="col-sm-10">
+                                <input
+                                    type="url"
+                                    className="form-control"
+                                    disabled={true}
+                                    placeholder={this.state.gcodeFileName}
+                                    onChange={this.handleChangeURL}
+                                />
+                            </div>
+                            <div className="col-sm-2">
+                                <button
+                                    type="button"
+                                    className="btn btn-default"
+                                    title={i18n._('Upload G-code')}
+                                    onClick={() => this.handleClickUpload(2)}
+                                >
+                                    {i18n._('Select')}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </Modal.Body>
@@ -379,6 +412,17 @@ class ApplyAutoLevel extends PureComponent {
                         onClick={actions.closeModal}
                     >
                         {i18n._('Cancel')}
+                    </button>
+                    <button
+                        type="button"
+                        className="btn btn-primary"
+                        onClick={() => {
+                            actions.closeModal();
+                            actions.loadAutoLevelledGcode('hello');
+                        }}
+                        disabled={!canClick}
+                    >
+                        {i18n._('Load G-Code')}
                     </button>
                     <button
                         type="button"

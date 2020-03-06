@@ -15,14 +15,14 @@ class MakeProbeFile extends PureComponent {
         const { state, actions } = this.props;
         const { startX, endX, startY, endY, stepX, stepY, feedXY, feedZ, depth, height } = state;
         const { canClick } = state;
-        //log.info('MakeProbeFile render:' + JSON.stringify(state));
+        // log.info('MakeProbeFile render:' + JSON.stringify(state));
         const displayUnits = i18n._('mm');
         const step = 1;
 
         return (
             <Modal disableOverlay size="sm" onClose={actions.closeModal}>
                 <Modal.Header>
-                    <Modal.Title>{i18n._('Make Probing Grid File')}</Modal.Title>
+                    <Modal.Title>{i18n._('Probing Setup')}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <div className="row no-gutters">
@@ -199,6 +199,16 @@ class MakeProbeFile extends PureComponent {
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
+                    <button
+                        type="button"
+                        className="btn btn-default"
+                        onClick={() => {
+                            actions.closeModal();
+                            actions.simulateProbing();
+                        }}
+                    >
+                        {i18n._('Simulate')}
+                    </button>
                     <button
                         type="button"
                         className="btn btn-default"

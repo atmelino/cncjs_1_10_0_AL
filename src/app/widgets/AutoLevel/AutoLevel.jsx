@@ -16,99 +16,7 @@ class AutoLevel extends PureComponent {
         actions: PropTypes.object
     };
 
-    state = {
-        probingObj: [],
-        probingMatrix: [],
-        referenceZ: 0.0
-    };
-
-    clearGrid = () => {
-        log.info('AutoLevel clearGrid');
-        this.setState({
-            probingObj: [],
-            probingMatrix: [],
-            referenceZ: 0.0
-        });
-    };
-
-    downloadableCSV = (rows) => {
-        let content = '';
-        rows.forEach((row, index) => {
-            content += row.join(',') + '\n';
-        });
-        return content;
-    }
-
-    download = (content, fileName, contentType) => {
-        var a = document.createElement('a');
-        var file = new Blob([content], { type: contentType });
-        a.href = URL.createObjectURL(file);
-        a.download = fileName;
-        a.click();
-    }
-
-    handleClickSave = () => {
-        let fileName = Date.now() + 'probedata.rpf';
-        let fileContent = JSON.stringify(this.state.probingObj);
-        //log.info('AutoLevel fileContent=' + fileContent);
-        this.download(fileContent, fileName, 'text/plain');
-
-        fileContent = this.downloadableCSV(this.state.probingMatrix);
-        fileName = 'probedata.csv';
-        this.download(fileContent, fileName, 'text/plain');
-    }
-
-    simulateProbing = () => {
-        const { state, actions } = this.props;
-        const { startX, endX, startY, endY, stepX, stepY } = state;
-        // log.info('AutoLevel simulateProbing state : ' + JSON.stringify(state));
-        log.info('AutoLevel simulateProbing startX, endX, startY, endY, stepX, stepY : ' + startX + ' ' + endX + ' ' + startY + ' ' + endY + ' ' + stepX + ' ' + stepY);
-        let row = [];
-        let simProbingObj = [];
-        let r = 70;
-        let x0 = (endX + startX) / 2;
-        let y0 = (endY + startY) / 2;
-        log.info(' AutoLevel simulateProbing x0,y0: ' + x0 + ' ' + y0);
-        let z0 = -56;
-        let cz = 0;
-        for (let y = startY; y <= endY; y += stepY) {
-            for (let x = startX; x <= endX; x += stepX) {
-                let sx = x;
-                let sy = y;
-                let sq1 = r * r - (x - x0) * (x - x0) - (y - y0) * (y - y0);
-                if (sq1 > 0) {
-                    cz = Math.sqrt(sq1) + z0;
-                } else {
-                    cz = 0;
-                }
-                if (cz < 0) {
-                    cz = 0;
-                }
-                let sz = 3;
-                //log.info('AutoLevel x y z: ' + sx + ' ' + sy + ' ' + cz);
-                simProbingObj.push({
-                    x: sx,
-                    y: sy,
-                    z: cz,
-                    pz: sz
-                });
-                row.push(cz);
-            }
-            this.state.probingMatrix.push(row);
-            row = [];
-        }
-        //log.info('AutoLevel simProbingObj : ' + JSON.stringify(simProbingObj));
-        //log.info('AutoLevel matrix : ' + JSON.stringify(this.state.probingMatrix));
-        this.setState({
-            probingObj: simProbingObj,
-            referenceZ: 0.0
-        });
-    }
-
     render() {
-        // log.info('AutoLevel render called');
-
-        //const { state } = this.props;
         const { state, actions } = this.props;
         //log.error('AutoLevel :' + JSON.stringify(state));
 
@@ -145,14 +53,14 @@ class AutoLevel extends PureComponent {
                 let sz = state.probingData.result.z;
 
                 // first data point becomes z reference
-                if (this.state.probingObj.length === 0) {
-                    this.state.referenceZ = Number(sz);
+                if (state.probingObj.length === 0) {
+                    state.referenceZ = Number(sz);
                 }
 
                 // correct new z entry for autolevel plane
-                log.info('AutoLevel new reference: ' + this.state.referenceZ);
+                log.info('AutoLevel new reference: ' + state.referenceZ);
                 let PRBz = Number(sz);
-                let corz = PRBz - this.state.referenceZ; // corrected z
+                let corz = PRBz - state.referenceZ; // corrected z
                 let cz = numeral(corz).format('0.000');
 
                 // if (this.state.probingObj.length > 0) {
@@ -166,7 +74,7 @@ class AutoLevel extends PureComponent {
                 //     }
                 // }
 
-                this.state.probingObj.push({
+                state.probingObj.push({
                     x: sx,
                     y: sy,
                     z: cz,
@@ -183,15 +91,14 @@ class AutoLevel extends PureComponent {
                     <div className="row no-gutters">
                         <div>
                             <ReactTable
-                                data={this.state.probingObj}
+                                data={state.probingObj}
                                 columns={probingColumns}
                                 defaultPageSize={10}
                             />
                         </div>
                         <div>
-                            <button onClick={this.clearGrid}>Clear</button>
-                            <button onClick={this.handleClickSave}>Save</button>
-                            <button onClick={this.simulateProbing}>Simulate</button>
+                            <button onClick={actions.clearGrid}>Clear</button>
+                            <button onClick={actions.handleClickSave}>Save</button>
                         </div>
                     </div>
                 </div>

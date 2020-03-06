@@ -1,5 +1,5 @@
 (For Autolevel test)
-(Probing is rectangle 0,0 to 100,100 )
+(Probing is rectangle -100,0 to -100,100 )
 
 G94 ( Millimeters per minute feed rate. )
 G21 ( Units == Millimeters. )
