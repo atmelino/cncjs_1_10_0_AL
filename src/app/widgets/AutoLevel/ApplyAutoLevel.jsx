@@ -16,6 +16,8 @@ class ApplyAutoLevel extends PureComponent {
         probingFileName: '- none -',
         step: 0,
         gcodeFileName: '- none -',
+        mediaSource: 1,
+        hideFile: false
     }
 
     alFileNamePrefix = '#AL:'
@@ -29,6 +31,14 @@ class ApplyAutoLevel extends PureComponent {
     fileInputEl = null;
 
     delta = 10;
+
+    componentDidMount() {
+        const { state, actions } = this.props;
+
+        //log.info('ApplyAutoLevel componentDidMount');
+        this.probedPoints = state.probingObj;
+        log.info('ApplyAutoLevel componentDidMount probedPoints \n' + JSON.stringify(this.probedPoints));
+    }
 
     handleClickUpload = (param) => {
         this.choice = param;
@@ -85,7 +95,7 @@ class ApplyAutoLevel extends PureComponent {
         log.info('ApplyAutoLevel step=' + this.delta);
         this.setState({ step: this.delta });
 
-        //log.info('ApplyAutoLevel readProbingFile probedPoints \n' + JSON.stringify(this.probedPoints));
+        log.info('ApplyAutoLevel readProbingFile probedPoints \n' + JSON.stringify(this.probedPoints));
         //log.info( 'ApplyAutoLevel readProbingFile probedPoints length \n' + this.probedPoints.length);
         //log.info( 'ApplyAutoLevel readProbingFile probedPoints[3].z \n' + this.probedPoints[3].z);
     }
@@ -306,11 +316,29 @@ class ApplyAutoLevel extends PureComponent {
         };
     }
 
+    handleUseCurrent() {
+        const { state, actions } = this.props;
+
+        this.probedPoints = state.probingObj;
+        log.info('ApplyAutoLevel handleUseCurrent probedPoints \n' + JSON.stringify(this.probedPoints));
+        this.setState({ hideFile: false });
+    }
+
+    handleUseFile() {
+        this.setState({ hideFile: true });
+        this.setState({ probingFileName: '- none -' });
+    }
+
     render() {
         const { state, actions } = this.props;
         const { canClick } = state;
+        const {
+            mediaSource
+        } = this.state;
 
-        //log.info( 'ApplyAutoLevel render:' + JSON.stringify(state));
+        const mystyle = this.state.hideFile ? {} : { display: 'none' };
+        //log.info('ApplyAutoLevel render:' + JSON.stringify(state));
+        //log.info('ApplyAutoLevel render:' + JSON.stringify(state.probingObj));
 
         return (
             <Modal disableOverlay size="sm" onClose={actions.closeModal}>
@@ -338,8 +366,11 @@ class ApplyAutoLevel extends PureComponent {
                                     type="radio"
                                     name="mediaSource"
                                     value={3}
-                                    checked={true}
-                                    onChange={this.handleLoadFile}
+                                    checked={mediaSource === 1}
+                                    onChange={() => {
+                                        this.setState({ mediaSource: 1 });
+                                        this.handleUseCurrent();
+                                    }}
                                 />
                                 {i18n._('Use current probing data')}
                             </label>
@@ -350,13 +381,19 @@ class ApplyAutoLevel extends PureComponent {
                                     type="radio"
                                     name="mediaSource"
                                     value={1}
-                                    checked={false}
-                                    onChange={this.handleLoadFile}
+                                    checked={mediaSource === 2}
+                                    onChange={() => {
+                                        this.setState({ mediaSource: 2 });
+                                        this.handleUseFile();
+                                    }}
                                 />
                                 {i18n._('Use a file')}
                             </label>
                         </div>
-                        <div className="row row-no-gutters">
+                        <div
+                            className="row row-no-gutters"
+                            style={mystyle}
+                        >
                             <div style={{ marginLeft: 20 }}>
                                 <div className="col-sm-10">
                                     <input

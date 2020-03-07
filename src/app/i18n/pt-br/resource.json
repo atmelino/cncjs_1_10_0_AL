@@ -537,7 +537,6 @@
     "AutoLevel Widget": "",
     "This widget lets you probe a grid for autolevelling a PCB.": "",
     "AutoLevel": "",
-    "Make Probing Grid File": "",
     "Start X": "",
     "End X": "",
     "Start Y": "",
@@ -553,5 +552,9 @@
     "Upload Probing Data": "",
     "Probing Data:": "",
     "Original G-Code:": "",
-    "Load G-Code": ""
+    "Load G-Code": "",
+    "Use current probing data": "",
+    "Use a file": "",
+    "Probing Setup": "",
+    "Simulate": ""
 }

@@ -89,7 +89,7 @@ class AutoLevelWidget extends PureComponent {
             const { minimized } = this.state;
             this.setState({ minimized: !minimized });
         },
-        openModal: (name = MODAL_NONE, params = {}) => {
+        openModalProbingSetup: (name = MODAL_NONE, params = {}) => {
             log.info('AutoLevel/index.jsx before dialog startX=' + this.state.startX);
             this.probingGcode = [];
             this.setState({
@@ -99,8 +99,8 @@ class AutoLevelWidget extends PureComponent {
                 }
             });
         },
-        openModal2: (name = MODAL_NONE, params = {}) => {
-            //log.info( 'AutoLevel/index.jsx openModal2');
+        openModalApplyAutoLevel: (name = MODAL_NONE, params = {}) => {
+            //log.info( 'AutoLevel/index.jsx openModalApplyAutoLevel');
             this.setState({
                 modal: {
                     name: name,
@@ -206,13 +206,14 @@ class AutoLevelWidget extends PureComponent {
             const { startX, endX, startY, endY, stepX, stepY } = this.state;
             //log.info('AutoLevel/index simulateProbing state : ' + JSON.stringify(this.state));
             //log.info('AutoLevel/index simulateProbing startX, endX, startY, endY, stepX, stepY : ' + startX + ' ' + endX + ' ' + startY + ' ' + endY + ' ' + stepX + ' ' + stepY);
+            this.state.probingMatrix = [];
             let row = [];
             let simProbingObj = [];
-            let r = 70;
             let x0 = (endX + startX) / 2;
             let y0 = (endY + startY) / 2;
-            //log.info(' AutoLevel/index simulateProbing x0,y0: ' + x0 + ' ' + y0);
-            let z0 = -56;
+            let sizeX = Math.abs(endX - startX);
+            let r = 0.7 * sizeX;
+            let z0 = -0.56 * sizeX;
             let cz = 0;
             for (let y = startY; y <= endY; y += stepY) {
                 for (let x = startX; x <= endX; x += stepX) {
@@ -251,7 +252,8 @@ class AutoLevelWidget extends PureComponent {
             log.info('AutoLevel/index clearGrid');
             this.setState({
                 probingObj: [],
-                referenceZ: 0.0
+                referenceZ: 0.0,
+                probingMatrix: []
             });
         },
         handleClickSave: () => {
@@ -261,10 +263,12 @@ class AutoLevelWidget extends PureComponent {
             //log.info('AutoLevel/index fileContent=' + fileContent);
             this.download(fileContent, fileName, 'text/plain');
 
-            fileContent = this.downloadableCSV(this.state.probingMatrix);
-            log.info('AutoLevel/index csv=' + fileContent);
-            fileName = prefix + 'probedata.csv';
-            this.download(fileContent, fileName, 'text/plain');
+            if (!(this.state.probingMatrix === undefined || this.state.probingMatrix.length === 0)) {
+                fileContent = this.downloadableCSV(this.state.probingMatrix);
+                //log.info('AutoLevel/index csv=' + fileContent);
+                fileName = prefix + 'probedata.csv';
+                this.download(fileContent, fileName, 'text/plain');
+            }
         }
     };
 

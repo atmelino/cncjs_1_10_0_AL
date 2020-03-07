@@ -108,7 +108,7 @@ class AutoLevel extends PureComponent {
                             type="button"
                             className="btn btn-sm btn-default"
                             onClick={() => {
-                                actions.openModal(MODAL_PREVIEW);
+                                actions.openModalProbingSetup(MODAL_PREVIEW);
                             }}
                             disabled={false}
                         >
@@ -120,7 +120,7 @@ class AutoLevel extends PureComponent {
                             type="button"
                             className="btn btn-sm btn-default"
                             onClick={() => {
-                                actions.openModal2(MODAL_PREVIEW2);
+                                actions.openModalApplyAutoLevel(MODAL_PREVIEW2);
                             }}
                             disabled={false}
                         >
