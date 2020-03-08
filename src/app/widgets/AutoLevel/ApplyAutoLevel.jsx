@@ -22,14 +22,18 @@ class ApplyAutoLevel extends PureComponent {
         probingXmin: 1,
         probingXmax: 2,
         probingYmin: 3,
-        probingYmax: 4
+        probingYmax: 4,
+        origXmin: 5,
+        origXmax: 6,
+        origYmin: 7,
+        origYmax: 8
     }
 
     alFileNamePrefix = '#AL:'
 
     probedPoints = [];
 
-    gcode = '';
+    //gcode = '';
 
     choice = null;
 
@@ -137,13 +141,31 @@ class ApplyAutoLevel extends PureComponent {
         this.gcode = contents;
     }
 
-    autolevel = (contents) => {
-        log.info('ApplyAutoLevel autolevel \n');
+    autolevelSave = (contents) => {
+        const { state, actions } = this.props;
+
+        log.info('ApplyAutoLevel autolevelSave \n');
         this.applyCompensation();
+        log.info('ApplyAutoLevel autolevelSave state.ALgcode \n' + state.ALgcode);
+        const newgcodeFileName = this.alFileNamePrefix + this.state.gcodeFileName;
+        //log.info( 'ApplyAutoLevel autolevelSave AL: loading new gcode' + newgcodeFileName);
+        //log.info('ApplyAutoLevel autolevelSave AL: new gcode' + result.join('\n'));
+        let fileName = newgcodeFileName;
+        let fileContent = state.ALgcode.join('\n');
+        this.download(fileContent, fileName, 'text/plain');
+    }
+
+    autolevelUpload = (contents) => {
+        const { state, actions } = this.props;
+        this.applyCompensation();
+        log.info('ApplyAutoLevel autolevelUpload state.ALgcode \n' + state.ALgcode);
+        actions.loadAutoLevelledGcode('hello');
     }
 
     applyCompensation() {
         log.info('ApplyAutoLevel applyCompensation AL: applying compensation ...\n');
+        const { state, actions } = this.props;
+
         try {
             let lines = this.gcode.split('\n');
             let p0 = {
@@ -210,13 +232,8 @@ class ApplyAutoLevel extends PureComponent {
                     }
                 }
             });
-            const newgcodeFileName = this.alFileNamePrefix + this.state.gcodeFileName;
-            //log.info( 'ApplyAutoLevel applyCompensation AL: loading new gcode' + newgcodeFileName);
-            //log.info('ApplyAutoLevel applyCompensation AL: new gcode' + result.join('\n'));
             log.info('ApplyAutoLevel applyCompensation AL: finished');
-            let fileName = newgcodeFileName;
-            let fileContent = result.join('\n');
-            this.download(fileContent, fileName, 'text/plain');
+            state.ALgcode = result;
         } catch (x) {
             log.info('ApplyAutoLevel applyCompensation AL: error occurred' + x);
         }
@@ -520,6 +537,52 @@ class ApplyAutoLevel extends PureComponent {
                             </div>
                         </div>
                     </div>
+                    <div className="row no-gutters">
+                        <div className="col-xs-3">
+                            <label className="control-label">{i18n._('Xmin')}</label>
+                            <div className="input-group input-group-sm">
+                                <input
+                                    type="text"
+                                    disabled={true}
+                                    className="form-control"
+                                    placeholder={this.state.origXmin}
+                                />
+                            </div>
+                        </div>
+                        <div className="col-xs-3">
+                            <label className="control-label">{i18n._('Xmax')}</label>
+                            <div className="input-group input-group-sm">
+                                <input
+                                    type="text"
+                                    disabled={true}
+                                    className="form-control"
+                                    placeholder={this.state.origXmax}
+                                />
+                            </div>
+                        </div>
+                        <div className="col-xs-3">
+                            <label className="control-label">{i18n._('Ymin')}</label>
+                            <div className="input-group input-group-sm">
+                                <input
+                                    type="text"
+                                    disabled={true}
+                                    className="form-control"
+                                    placeholder={this.state.origYmin}
+                                />
+                            </div>
+                        </div>
+                        <div className="col-xs-3">
+                            <label className="control-label">{i18n._('Ymax')}</label>
+                            <div className="input-group input-group-sm">
+                                <input
+                                    type="text"
+                                    disabled={true}
+                                    className="form-control"
+                                    placeholder={this.state.origYmax}
+                                />
+                            </div>
+                        </div>
+                    </div>
                 </Modal.Body>
                 <Modal.Footer>
                     <button
@@ -534,18 +597,18 @@ class ApplyAutoLevel extends PureComponent {
                         className="btn btn-primary"
                         onClick={() => {
                             actions.closeModal();
-                            actions.loadAutoLevelledGcode('hello');
+                            this.autolevelUpload('hello');
                         }}
                         disabled={!canClick}
                     >
-                        {i18n._('Load G-Code')}
+                        {i18n._('Upload G-Code')}
                     </button>
                     <button
                         type="button"
                         className="btn btn-primary"
                         onClick={() => {
                             actions.closeModal();
-                            this.autolevel('hello');
+                            this.autolevelSave('hello');
                         }}
                     >
                         {i18n._('Make File')}

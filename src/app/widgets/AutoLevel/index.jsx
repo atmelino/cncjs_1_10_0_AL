@@ -176,6 +176,27 @@ class AutoLevelWidget extends PureComponent {
         loadProbingGcode: (commands) => {
             this.makeProbeFileCommands();
             const gcode = this.probingGcode.join('');
+            log.info('AutoLevel/index.jsx gcode' + gcode);
+            const name = 'something';
+            const { port } = this.state;
+            api.loadGCode({ port, name, gcode })
+                .then((res) => {
+                    const { name = '', gcode = '' } = { ...res.body };
+                    pubsub.publish('gcode:load', { name, gcode });
+                })
+                .catch((res) => {
+                    log.error('Failed to upload G-code file');
+                })
+                .then(() => {
+                    //stopWaiting();
+                    this.setState({ isUploading: false });
+                });
+        },
+        loadAutoLevelledGcode: (commands) => {
+            const { ALgcode } = this.state;
+            log.info('AutoLevel/index.jsx ALgcode' + ALgcode);
+            const gcode = ALgcode.join('');
+            log.info('AutoLevel/index.jsx gcode' + gcode);
             const name = 'something';
             const { port } = this.state;
             //log.info('AutoLevel/index.jsx gcode' + gcode);
@@ -463,6 +484,7 @@ class AutoLevelWidget extends PureComponent {
             probingObj: [],
             referenceZ: 0.0,
             probingMatrix: [],
+            ALgcode: []
         };
     }
 

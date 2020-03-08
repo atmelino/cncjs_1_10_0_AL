@@ -225,7 +225,7 @@ class MakeProbeFile extends PureComponent {
                         }}
                         disabled={!canClick}
                     >
-                        {i18n._('Load G-Code')}
+                        {i18n._('Upload G-Code')}
                     </button>
                     <button
                         type="button"
