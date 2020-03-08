@@ -552,7 +552,6 @@
     "Upload Probing Data": "",
     "Probing Data:": "",
     "Original G-Code:": "",
-    "Load G-Code": "",
     "Use current probing data": "",
     "Use a file": "",
     "Probing Setup": "",
@@ -560,5 +559,6 @@
     "Xmin": "",
     "Xmax": "",
     "Ymin": "",
-    "Ymax": ""
+    "Ymax": "",
+    "Upload G-Code": ""
 }

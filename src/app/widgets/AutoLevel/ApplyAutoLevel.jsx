@@ -5,7 +5,6 @@ import React, { PureComponent } from 'react';
 import Modal from 'app/components/Modal';
 import i18n from 'app/lib/i18n';
 import log from '../../lib/log';
-import { TINYG_MACHINE_STATE_ALARM } from '../../constants';
 
 class ApplyAutoLevel extends PureComponent {
     static propTypes = {
@@ -163,8 +162,12 @@ class ApplyAutoLevel extends PureComponent {
     }
 
     applyCompensation() {
-        log.info('ApplyAutoLevel applyCompensation AL: applying compensation ...\n');
         const { state, actions } = this.props;
+        const { ALgcode } = state;
+        log.info('ApplyAutoLevel applyCompensation ALgcode \n' + ALgcode);
+
+        log.info('ApplyAutoLevel applyCompensation AL: applying compensation ...\n');
+        // log.info('ApplyAutoLevel applyCompensation state:' + JSON.stringify(state));
 
         try {
             let lines = this.gcode.split('\n');
@@ -233,7 +236,8 @@ class ApplyAutoLevel extends PureComponent {
                 }
             });
             log.info('ApplyAutoLevel applyCompensation AL: finished');
-            state.ALgcode = result;
+            ALgcode = result;
+            log.info('ApplyAutoLevel applyCompensation ALgcode:' + ALgcode);
         } catch (x) {
             log.info('ApplyAutoLevel applyCompensation AL: error occurred' + x);
         }
@@ -381,7 +385,6 @@ class ApplyAutoLevel extends PureComponent {
 
     render() {
         const { state, actions } = this.props;
-        const { probingXmin, probingXmax, probingYmin, probingYmax } = state;
         const { canClick } = state;
         const {
             mediaSource
