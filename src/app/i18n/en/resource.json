@@ -556,5 +556,9 @@
     "Use current probing data": "Use current probing data",
     "Use a file": "Use a file",
     "Probing Setup": "Probing Setup",
-    "Simulate": "Simulate"
+    "Simulate": "Simulate",
+    "Xmin": "Xmin",
+    "Xmax": "Xmax",
+    "Ymin": "Ymin",
+    "Ymax": "Ymax"
 }

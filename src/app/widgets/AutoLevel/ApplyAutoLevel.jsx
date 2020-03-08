@@ -1,3 +1,4 @@
+import _max from 'lodash/max';
 import PropTypes from 'prop-types';
 import pick from 'lodash/pick';
 import React, { PureComponent } from 'react';
@@ -18,10 +19,10 @@ class ApplyAutoLevel extends PureComponent {
         gcodeFileName: '- none -',
         mediaSource: 1,
         hideFile: false,
-        probingXmin: 0,
-        probingXmax: 0,
-        probingYmin: 0,
-        probingYmax: 0
+        probingXmin: 1,
+        probingXmax: 2,
+        probingYmin: 3,
+        probingYmax: 4
     }
 
     alFileNamePrefix = '#AL:'
@@ -42,7 +43,32 @@ class ApplyAutoLevel extends PureComponent {
         //log.info('ApplyAutoLevel componentDidMount');
         this.probedPoints = state.probingObj;
         log.info('ApplyAutoLevel componentDidMount probedPoints \n' + JSON.stringify(this.probedPoints));
-        log.info('ApplyAutoLevel componentDidMount probedPoints \n' + _({ "a": 4, "b": 0.5, "c": 0.35, "d": 5 }).values().max());
+        // log.info('ApplyAutoLevel componentDidMount probedPoints \n' + _({ "a": 4, "b": 0.5, "c": 0.35, "d": 5 }).values().max());
+        //const max = _max(this.probedPoints);
+        //let result = this.probedPoints.map((y) => y);
+        // let result = this.probedPoints.map((o) => {
+        //     return o.y;
+        // });
+        // let maxValue = Math.max.apply(null, result);
+        // this.setState({ probingYmax: maxValue });
+        // log.info('ApplyAutoLevel componentDidMount probedPoints y=' + result);
+        // log.info('ApplyAutoLevel componentDidMount probedPoints max=' + maxValue);
+        this.updateMinMax();
+    }
+
+    updateMinMax() {
+        let xArray = this.probedPoints.map((o) => {
+            return o.x;
+        });
+        let yArray = this.probedPoints.map((o) => {
+            return o.y;
+        });
+        this.setState({
+            probingXmin: Math.min.apply(null, xArray),
+            probingXmax: Math.max.apply(null, xArray),
+            probingYmin: Math.min.apply(null, yArray),
+            probingYmax: Math.max.apply(null, yArray)
+        });
     }
 
     handleClickUpload = (param) => {
@@ -103,6 +129,7 @@ class ApplyAutoLevel extends PureComponent {
         log.info('ApplyAutoLevel readProbingFile probedPoints \n' + JSON.stringify(this.probedPoints));
         //log.info( 'ApplyAutoLevel readProbingFile probedPoints length \n' + this.probedPoints.length);
         //log.info( 'ApplyAutoLevel readProbingFile probedPoints[3].z \n' + this.probedPoints[3].z);
+        this.updateMinMax();
     }
 
     readGcodeFile = (contents) => {
@@ -327,6 +354,7 @@ class ApplyAutoLevel extends PureComponent {
         this.probedPoints = state.probingObj;
         log.info('ApplyAutoLevel handleUseCurrent probedPoints \n' + JSON.stringify(this.probedPoints));
         this.setState({ hideFile: false });
+        this.updateMinMax();
     }
 
     handleUseFile() {
@@ -408,7 +436,6 @@ class ApplyAutoLevel extends PureComponent {
                                         className="form-control"
                                         disabled={true}
                                         placeholder={this.state.probingFileName}
-                                        onChange={this.handleChangeURL}
                                     />
                                 </div>
                                 <div className="col-sm-2">
@@ -432,8 +459,7 @@ class ApplyAutoLevel extends PureComponent {
                                     type="text"
                                     disabled={true}
                                     className="form-control"
-                                    value={probingXmin}
-                                    placeholder="0.00"
+                                    placeholder={this.state.probingXmin}
                                 />
                             </div>
                         </div>
@@ -444,8 +470,7 @@ class ApplyAutoLevel extends PureComponent {
                                     type="text"
                                     disabled={true}
                                     className="form-control"
-                                    value={probingXmax}
-                                    placeholder="0.00"
+                                    placeholder={this.state.probingXmax}
                                 />
                             </div>
                         </div>
@@ -456,8 +481,7 @@ class ApplyAutoLevel extends PureComponent {
                                     type="text"
                                     disabled={true}
                                     className="form-control"
-                                    value={probingYmin}
-                                    placeholder="0.00"
+                                    placeholder={this.state.probingYmin}
                                 />
                             </div>
                         </div>
@@ -468,8 +492,7 @@ class ApplyAutoLevel extends PureComponent {
                                     type="text"
                                     disabled={true}
                                     className="form-control"
-                                    value={probingYmax}
-                                    placeholder="0.00"
+                                    placeholder={this.state.probingYmax}
                                 />
                             </div>
                         </div>
@@ -483,7 +506,6 @@ class ApplyAutoLevel extends PureComponent {
                                     className="form-control"
                                     disabled={true}
                                     placeholder={this.state.gcodeFileName}
-                                    onChange={this.handleChangeURL}
                                 />
                             </div>
                             <div className="col-sm-2">
