@@ -17,7 +17,11 @@ class ApplyAutoLevel extends PureComponent {
         step: 0,
         gcodeFileName: '- none -',
         mediaSource: 1,
-        hideFile: false
+        hideFile: false,
+        probingXmin: 0,
+        probingXmax: 0,
+        probingYmin: 0,
+        probingYmax: 0
     }
 
     alFileNamePrefix = '#AL:'
@@ -38,6 +42,7 @@ class ApplyAutoLevel extends PureComponent {
         //log.info('ApplyAutoLevel componentDidMount');
         this.probedPoints = state.probingObj;
         log.info('ApplyAutoLevel componentDidMount probedPoints \n' + JSON.stringify(this.probedPoints));
+        log.info('ApplyAutoLevel componentDidMount probedPoints \n' + _({ "a": 4, "b": 0.5, "c": 0.35, "d": 5 }).values().max());
     }
 
     handleClickUpload = (param) => {
@@ -331,10 +336,12 @@ class ApplyAutoLevel extends PureComponent {
 
     render() {
         const { state, actions } = this.props;
+        const { probingXmin, probingXmax, probingYmin, probingYmax } = state;
         const { canClick } = state;
         const {
             mediaSource
         } = this.state;
+        const displayUnits = i18n._('mm');
 
         const mystyle = this.state.hideFile ? {} : { display: 'none' };
         //log.info('ApplyAutoLevel render:' + JSON.stringify(state));
@@ -414,6 +421,56 @@ class ApplyAutoLevel extends PureComponent {
                                         {i18n._('Select')}
                                     </button>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="row no-gutters">
+                        <div className="col-xs-3">
+                            <label className="control-label">{i18n._('Xmin')}</label>
+                            <div className="input-group input-group-sm">
+                                <input
+                                    type="text"
+                                    disabled={true}
+                                    className="form-control"
+                                    value={probingXmin}
+                                    placeholder="0.00"
+                                />
+                            </div>
+                        </div>
+                        <div className="col-xs-3">
+                            <label className="control-label">{i18n._('Xmax')}</label>
+                            <div className="input-group input-group-sm">
+                                <input
+                                    type="text"
+                                    disabled={true}
+                                    className="form-control"
+                                    value={probingXmax}
+                                    placeholder="0.00"
+                                />
+                            </div>
+                        </div>
+                        <div className="col-xs-3">
+                            <label className="control-label">{i18n._('Ymin')}</label>
+                            <div className="input-group input-group-sm">
+                                <input
+                                    type="text"
+                                    disabled={true}
+                                    className="form-control"
+                                    value={probingYmin}
+                                    placeholder="0.00"
+                                />
+                            </div>
+                        </div>
+                        <div className="col-xs-3">
+                            <label className="control-label">{i18n._('Ymax')}</label>
+                            <div className="input-group input-group-sm">
+                                <input
+                                    type="text"
+                                    disabled={true}
+                                    className="form-control"
+                                    value={probingYmax}
+                                    placeholder="0.00"
+                                />
                             </div>
                         </div>
                     </div>
