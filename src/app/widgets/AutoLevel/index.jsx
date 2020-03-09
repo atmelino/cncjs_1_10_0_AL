@@ -192,10 +192,9 @@ class AutoLevelWidget extends PureComponent {
                     this.setState({ isUploading: false });
                 });
         },
-        loadAutoLevelledGcode: (commands) => {
-            const { ALgcode } = this.state;
-            log.info('AutoLevel/index.jsx ALgcode' + ALgcode);
-            const gcode = ALgcode.join('');
+        loadAutoLevelledGcode: (result) => {
+            log.info('AutoLevel/index.jsx loadAutoLevelledGcode result' + result);
+            const gcode = result.join('\n');
             log.info('AutoLevel/index.jsx gcode' + gcode);
             const name = 'something';
             const { port } = this.state;

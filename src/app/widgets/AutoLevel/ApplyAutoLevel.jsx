@@ -32,7 +32,7 @@ class ApplyAutoLevel extends PureComponent {
 
     probedPoints = [];
 
-    //gcode = '';
+    result = [];
 
     choice = null;
 
@@ -157,15 +157,11 @@ class ApplyAutoLevel extends PureComponent {
     autolevelUpload = (contents) => {
         const { state, actions } = this.props;
         this.applyCompensation();
-        log.info('ApplyAutoLevel autolevelUpload state.ALgcode \n' + state.ALgcode);
-        actions.loadAutoLevelledGcode('hello');
+        // log.info('ApplyAutoLevel autolevelUpload state.ALgcode \n' + state.ALgcode);
+        actions.loadAutoLevelledGcode(this.result);
     }
 
     applyCompensation() {
-        const { state, actions } = this.props;
-        const { ALgcode } = state;
-        log.info('ApplyAutoLevel applyCompensation ALgcode \n' + ALgcode);
-
         log.info('ApplyAutoLevel applyCompensation AL: applying compensation ...\n');
         // log.info('ApplyAutoLevel applyCompensation state:' + JSON.stringify(state));
 
@@ -183,17 +179,16 @@ class ApplyAutoLevel extends PureComponent {
             };
 
             let abs = true;
-            let result = [];
             lines.forEach((line, index) => {
                 //log.info('ApplyAutoLevel applyCompensation line ' + index + '\n' + line);
                 let lineStripped = this.stripComments(line);
                 if (!/(X|Y|Z)/gi.test(lineStripped)) {
-                    result.push(lineStripped); // no coordinate change --> copy to output
+                    this.result.push(lineStripped); // no coordinate change --> copy to output
                 } else {
                     //log.info( 'else');
                     let f = 1;
                     if (/(G38.+|G5.+|G10|G2.+|G4.+|G92|G92.1)/gi.test(lineStripped)) {
-                        result.push(lineStripped); // skip compensation for these G-Codes
+                        this.result.push(lineStripped); // skip compensation for these G-Codes
                     } else {
                         if (/G91/i.test(lineStripped)) {
                             abs = false;
@@ -221,10 +216,10 @@ class ApplyAutoLevel extends PureComponent {
                             for (let seg of segs) {
                                 let cpt = this.compensateZCoord(seg);
                                 let newLine = lineStripped + ` X${cpt.x.toFixed(3)} Y${cpt.y.toFixed(3)} Z${cpt.z.toFixed(3)} ; Z${seg.z.toFixed(3)}`;
-                                result.push(newLine.trim());
+                                this.result.push(newLine.trim());
                             }
                         } else {
-                            result.push(lineStripped);
+                            this.result.push(lineStripped);
                             log.info('WARNING: using relative mode may not produce correct results');
                         }
                         p0 = {
@@ -236,8 +231,7 @@ class ApplyAutoLevel extends PureComponent {
                 }
             });
             log.info('ApplyAutoLevel applyCompensation AL: finished');
-            ALgcode = result;
-            log.info('ApplyAutoLevel applyCompensation ALgcode:' + ALgcode);
+            log.info('ApplyAutoLevel applyCompensation result:' + this.result);
         } catch (x) {
             log.info('ApplyAutoLevel applyCompensation AL: error occurred' + x);
         }
