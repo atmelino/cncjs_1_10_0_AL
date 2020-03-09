@@ -90,7 +90,7 @@ class AutoLevelWidget extends PureComponent {
             this.setState({ minimized: !minimized });
         },
         openModalProbingSetup: (name = MODAL_NONE, params = {}) => {
-            log.info('AutoLevel/index.jsx before dialog startX=' + this.state.startX);
+            //log.info('AutoLevel/index.jsx before dialog startX=' + this.state.startX);
             this.probingGcode = [];
             this.setState({
                 modal: {
@@ -127,12 +127,6 @@ class AutoLevelWidget extends PureComponent {
         //         }
         //     });
         // },
-        handleLoadFile: (event) => {
-            log.info('AutoLevel/index.jsx handleLoadFile');
-            //this.handleChangeFile();
-            const startX = event.target.value;
-            this.setState({ startX: parseInt(startX, 10) });
-        },
         handleStartXChange: (event) => {
             const startX = event.target.value;
             this.setState({ startX: parseInt(startX, 10) });
@@ -176,7 +170,7 @@ class AutoLevelWidget extends PureComponent {
         loadProbingGcode: (commands) => {
             this.makeProbeFileCommands();
             const gcode = this.probingGcode.join('');
-            log.info('AutoLevel/index.jsx gcode' + gcode);
+            //log.info('AutoLevel/index.jsx gcode' + gcode);
             const name = 'something';
             const { port } = this.state;
             api.loadGCode({ port, name, gcode })
@@ -193,12 +187,10 @@ class AutoLevelWidget extends PureComponent {
                 });
         },
         loadAutoLevelledGcode: (result) => {
-            log.info('AutoLevel/index.jsx loadAutoLevelledGcode result' + result);
+            //log.info('AutoLevel/index.jsx loadAutoLevelledGcode result' + result);
             const gcode = result.join('\n');
-            log.info('AutoLevel/index.jsx gcode' + gcode);
             const name = 'something';
             const { port } = this.state;
-            //log.info('AutoLevel/index.jsx gcode' + gcode);
             api.loadGCode({ port, name, gcode })
                 .then((res) => {
                     const { name = '', gcode = '' } = { ...res.body };

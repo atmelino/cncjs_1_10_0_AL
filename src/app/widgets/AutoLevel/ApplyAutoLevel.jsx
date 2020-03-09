@@ -16,7 +16,7 @@ class ApplyAutoLevel extends PureComponent {
         probingFileName: '- none -',
         step: 0,
         gcodeFileName: '- none -',
-        mediaSource: 1,
+        probingDataSource: 1,
         hideFile: false,
         probingXmin: 1,
         probingXmax: 2,
@@ -25,12 +25,16 @@ class ApplyAutoLevel extends PureComponent {
         origXmin: 5,
         origXmax: 6,
         origYmin: 7,
-        origYmax: 8
+        origYmax: 8,
+        canClickSave: false,
+        canClickUpload: false
     }
 
     alFileNamePrefix = '#AL:'
 
     probedPoints = [];
+
+    gcode = '';
 
     result = [];
 
@@ -43,20 +47,27 @@ class ApplyAutoLevel extends PureComponent {
     componentDidMount() {
         const { state, actions } = this.props;
 
-        //log.info('ApplyAutoLevel componentDidMount');
+        log.info('ApplyAutoLevel componentDidMount');
         this.probedPoints = state.probingObj;
-        log.info('ApplyAutoLevel componentDidMount probedPoints \n' + JSON.stringify(this.probedPoints));
-        // log.info('ApplyAutoLevel componentDidMount probedPoints \n' + _({ "a": 4, "b": 0.5, "c": 0.35, "d": 5 }).values().max());
-        //const max = _max(this.probedPoints);
-        //let result = this.probedPoints.map((y) => y);
-        // let result = this.probedPoints.map((o) => {
-        //     return o.y;
-        // });
-        // let maxValue = Math.max.apply(null, result);
-        // this.setState({ probingYmax: maxValue });
-        // log.info('ApplyAutoLevel componentDidMount probedPoints y=' + result);
-        // log.info('ApplyAutoLevel componentDidMount probedPoints max=' + maxValue);
+        //log.info('ApplyAutoLevel componentDidMount probedPoints \n' + JSON.stringify(this.probedPoints));
         this.updateMinMax();
+    }
+
+    canClick() {
+        const { state, actions } = this.props;
+
+        if (this.probedPoints.length > 0 && this.gcode.length > 0) {
+            this.setState({ canClickSave: true });
+            if (state.canClick) {
+                this.setState({ canClickUpload: true });
+            }
+        }
+        // const canClickSave = (this.probedPoints.length > 0 && this.gcode.length > 0);
+        // const canClickUpload = canClick && (this.probedPoints.length > 0 && this.gcode.length > 0);
+        // log.info('ApplyAutoLevel canClick this.probedPoints.length:' + this.probedPoints.length);
+        // log.info('ApplyAutoLevel canClick this.gcode  \n' + this.gcode);
+        // log.info('ApplyAutoLevel canClick this.gcode.length:' + this.gcode.length);
+        // log.info('ApplyAutoLevel canClick canClickupload:' + this.state.canClickUpload);
     }
 
     updateMinMax() {
@@ -129,35 +140,35 @@ class ApplyAutoLevel extends PureComponent {
         log.info('ApplyAutoLevel step=' + this.delta);
         this.setState({ step: this.delta });
 
-        log.info('ApplyAutoLevel readProbingFile probedPoints \n' + JSON.stringify(this.probedPoints));
+        //log.info('ApplyAutoLevel readProbingFile probedPoints \n' + JSON.stringify(this.probedPoints));
         //log.info( 'ApplyAutoLevel readProbingFile probedPoints length \n' + this.probedPoints.length);
         //log.info( 'ApplyAutoLevel readProbingFile probedPoints[3].z \n' + this.probedPoints[3].z);
         this.updateMinMax();
+        this.canClick();
     }
 
     readGcodeFile = (contents) => {
         //log.info('ApplyAutoLevel gcodeFile  \n' + contents);
         this.gcode = contents;
+        log.info('ApplyAutoLevel readGcodeFile this.gcode  \n' + this.gcode);
+        this.canClick();
     }
 
     autolevelSave = (contents) => {
-        const { state, actions } = this.props;
-
         log.info('ApplyAutoLevel autolevelSave \n');
         this.applyCompensation();
-        log.info('ApplyAutoLevel autolevelSave state.ALgcode \n' + state.ALgcode);
+        log.info('ApplyAutoLevel autolevelSave this.result \n' + this.result);
         const newgcodeFileName = this.alFileNamePrefix + this.state.gcodeFileName;
         //log.info( 'ApplyAutoLevel autolevelSave AL: loading new gcode' + newgcodeFileName);
         //log.info('ApplyAutoLevel autolevelSave AL: new gcode' + result.join('\n'));
         let fileName = newgcodeFileName;
-        let fileContent = state.ALgcode.join('\n');
+        let fileContent = this.result.join('\n');
         this.download(fileContent, fileName, 'text/plain');
     }
 
     autolevelUpload = (contents) => {
         const { state, actions } = this.props;
         this.applyCompensation();
-        // log.info('ApplyAutoLevel autolevelUpload state.ALgcode \n' + state.ALgcode);
         actions.loadAutoLevelledGcode(this.result);
     }
 
@@ -231,7 +242,7 @@ class ApplyAutoLevel extends PureComponent {
                 }
             });
             log.info('ApplyAutoLevel applyCompensation AL: finished');
-            log.info('ApplyAutoLevel applyCompensation result:' + this.result);
+            //log.info('ApplyAutoLevel applyCompensation result:' + this.result);
         } catch (x) {
             log.info('ApplyAutoLevel applyCompensation AL: error occurred' + x);
         }
@@ -370,24 +381,26 @@ class ApplyAutoLevel extends PureComponent {
         log.info('ApplyAutoLevel handleUseCurrent probedPoints \n' + JSON.stringify(this.probedPoints));
         this.setState({ hideFile: false });
         this.updateMinMax();
+        this.canClick();
     }
 
     handleUseFile() {
         this.setState({ hideFile: true });
         this.setState({ probingFileName: '- none -' });
+        this.canClick();
     }
 
     render() {
         const { state, actions } = this.props;
-        const { canClick } = state;
         const {
-            mediaSource
+            probingDataSource
         } = this.state;
         const displayUnits = i18n._('mm');
-
         const mystyle = this.state.hideFile ? {} : { display: 'none' };
         //log.info('ApplyAutoLevel render:' + JSON.stringify(state));
         //log.info('ApplyAutoLevel render:' + JSON.stringify(state.probingObj));
+        //log.info('ApplyAutoLevel render this.gcode  \n' + this.gcode);
+        //this.canClick();
 
         return (
             <Modal disableOverlay size="sm" onClose={actions.closeModal}>
@@ -413,11 +426,11 @@ class ApplyAutoLevel extends PureComponent {
                             <label>
                                 <input
                                     type="radio"
-                                    name="mediaSource"
+                                    name="probingDataSource"
                                     value={3}
-                                    checked={mediaSource === 1}
+                                    checked={probingDataSource === 1}
                                     onChange={() => {
-                                        this.setState({ mediaSource: 1 });
+                                        this.setState({ probingDataSource: 1 });
                                         this.handleUseCurrent();
                                     }}
                                 />
@@ -428,11 +441,11 @@ class ApplyAutoLevel extends PureComponent {
                             <label>
                                 <input
                                     type="radio"
-                                    name="mediaSource"
+                                    name="probingDataSource"
                                     value={1}
-                                    checked={mediaSource === 2}
+                                    checked={probingDataSource === 2}
                                     onChange={() => {
-                                        this.setState({ mediaSource: 2 });
+                                        this.setState({ probingDataSource: 2 });
                                         this.handleUseFile();
                                     }}
                                 />
@@ -596,7 +609,7 @@ class ApplyAutoLevel extends PureComponent {
                             actions.closeModal();
                             this.autolevelUpload('hello');
                         }}
-                        disabled={!canClick}
+                        disabled={!this.state.canClickUpload}
                     >
                         {i18n._('Upload G-Code')}
                     </button>
@@ -607,6 +620,7 @@ class ApplyAutoLevel extends PureComponent {
                             actions.closeModal();
                             this.autolevelSave('hello');
                         }}
+                        disabled={!this.state.canClickSave}
                     >
                         {i18n._('Make File')}
                     </button>

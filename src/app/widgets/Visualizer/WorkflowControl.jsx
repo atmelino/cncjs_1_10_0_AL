@@ -51,7 +51,7 @@ class WorkflowControl extends PureComponent {
 
         reader.onloadend = (event) => {
             const { result, error } = event.target;
-            log.info('WorkflowControl result :' + result);
+            //log.info('WorkflowControl result :' + result);
 
             if (error) {
                 log.error(error);
