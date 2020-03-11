@@ -47,10 +47,6 @@ class ApplyAutoLevel extends PureComponent {
                 y: 0,
             }
         },
-        origXmin: 5,
-        origXmax: 6,
-        origYmin: 7,
-        origYmax: 8,
         canClickSave: false,
         canClickUpload: false
     }
@@ -106,16 +102,12 @@ class ApplyAutoLevel extends PureComponent {
         let xmax = Math.max.apply(null, xArray);
         let ymin = Math.min.apply(null, yArray);
         let ymax = Math.max.apply(null, yArray);
-        //log.info('ApplyAutoLevel xmin:' + xmin);
-        log.info('ApplyAutoLevel xmax:' + xmax);
         xmin = xmin === Infinity ? 0 : xmin;
         xmax = xmax === -Infinity ? 0 : xmax;
         ymin = ymin === Infinity ? 0 : ymin;
         ymax = ymax === -Infinity ? 0 : ymax;
         let dX = Math.abs(xmax - xmin);
         let dY = Math.abs(ymax - ymin);
-        //log.info('ApplyAutoLevel xmin:' + xmin);
-        log.info('ApplyAutoLevel xmax:' + xmax);
         this.setState({
             probingBbox: {
                 min: {
@@ -199,14 +191,67 @@ class ApplyAutoLevel extends PureComponent {
     readGcodeFile = (contents) => {
         //log.info('ApplyAutoLevel gcodeFile  \n' + contents);
         this.gcode = contents;
-        log.info('ApplyAutoLevel readGcodeFile this.gcode  \n' + this.gcode);
+        // log.info('ApplyAutoLevel readGcodeFile this.gcode  \n' + this.gcode);
+        this.findMinMax();
         this.canClick();
+    }
+
+    findMinMax = () => {
+        let lines = this.gcode.split('\n');
+        let xmin = Infinity;
+        let xmax = -Infinity;
+        let ymin = Infinity;
+        let ymax = -Infinity;
+        let pt = {
+            x: 0,
+            y: 0,
+            z: 0
+        };
+        lines.forEach((line, index) => {
+            let lineStripped = this.stripComments(line);
+            let xMatch = /X([\.\+\-\d]+)/gi.exec(lineStripped);
+            if (xMatch) {
+                pt.x = parseFloat(xMatch[1]);
+            }
+            let yMatch = /Y([\.\+\-\d]+)/gi.exec(lineStripped);
+            if (yMatch) {
+                pt.y = parseFloat(yMatch[1]);
+            }
+            let zMatch = /Z([\.\+\-\d]+)/gi.exec(lineStripped);
+            if (zMatch) {
+                pt.z = parseFloat(zMatch[1]);
+            }
+            // log.info('ApplyAutoLevel findMinMax pt ' + JSON.stringify(pt));
+            xmin = (pt.x < xmin ? pt.x : xmin);
+            xmax = (pt.x > xmax ? pt.x : xmax);
+            ymin = (pt.y < ymin ? pt.y : ymin);
+            ymax = (pt.y > ymax ? pt.y : ymax);
+        });
+        // log.info('ApplyAutoLevel findMinMax origBbox.min.x ' + this.state.origBbox.min.x);
+        let dX = Math.abs(xmax - xmin);
+        let dY = Math.abs(ymax - ymin);
+        this.setState({
+            origBbox: {
+                min: {
+                    x: xmin,
+                    y: ymin,
+                },
+                max: {
+                    x: xmax,
+                    y: ymax,
+                },
+                delta: {
+                    x: dX,
+                    y: dY,
+                }
+            }
+        });
     }
 
     autolevelSave = (contents) => {
         log.info('ApplyAutoLevel autolevelSave \n');
         this.applyCompensation();
-        log.info('ApplyAutoLevel autolevelSave this.result \n' + this.result);
+        //log.info('ApplyAutoLevel autolevelSave this.result \n' + this.result);
         const newgcodeFileName = this.alFileNamePrefix + this.state.gcodeFileName;
         //log.info( 'ApplyAutoLevel autolevelSave AL: loading new gcode' + newgcodeFileName);
         //log.info('ApplyAutoLevel autolevelSave AL: new gcode' + result.join('\n'));
