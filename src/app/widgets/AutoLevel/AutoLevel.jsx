@@ -16,6 +16,8 @@ class AutoLevel extends PureComponent {
         actions: PropTypes.object
     };
 
+    referenceZ = 0.0;
+
     render() {
         const { state, actions } = this.props;
         //log.error('AutoLevel :' + JSON.stringify(state));
@@ -54,13 +56,13 @@ class AutoLevel extends PureComponent {
 
                 // first data point becomes z reference
                 if (state.probingObj.length === 0) {
-                    state.referenceZ = Number(sz);
+                    this.referenceZ = Number(sz);
                 }
 
                 // correct new z entry for autolevel plane
-                log.info('AutoLevel new reference: ' + state.referenceZ);
+                log.info('AutoLevel new reference: ' + this.referenceZ);
                 let PRBz = Number(sz);
-                let corz = PRBz - state.referenceZ; // corrected z
+                let corz = PRBz - this.referenceZ; // corrected z
                 let cz = numeral(corz).format('0.000');
 
                 // if (this.state.probingObj.length > 0) {
@@ -70,7 +72,7 @@ class AutoLevel extends PureComponent {
                 //     let index = this.state.probingObj.length - 1;
                 //     if (sx === this.state.probingObj[index].x && sy === this.state.probingObj[index].y) {
                 //         log.error('AutoLevel repeat position: ');
-                //         this.state.referenceZ = Number(sz);
+                //         this.this.referenceZ = Number(sz);
                 //     }
                 // }
 

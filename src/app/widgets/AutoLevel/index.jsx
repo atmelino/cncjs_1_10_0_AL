@@ -473,7 +473,6 @@ class AutoLevelWidget extends PureComponent {
             depth: Number(this.config.get('depth') || 5).toFixed(3) * 1,
             height: Number(this.config.get('height') || 3).toFixed(3) * 1,
             probingObj: [],
-            referenceZ: 0.0,
             probingMatrix: [],
             ALgcode: []
         };

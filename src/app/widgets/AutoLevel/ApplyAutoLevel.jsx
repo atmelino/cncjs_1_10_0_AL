@@ -5,6 +5,7 @@ import React, { PureComponent } from 'react';
 import Modal from 'app/components/Modal';
 import i18n from 'app/lib/i18n';
 import log from '../../lib/log';
+import styles from './index.styl';
 
 class ApplyAutoLevel extends PureComponent {
     static propTypes = {
@@ -13,15 +14,39 @@ class ApplyAutoLevel extends PureComponent {
     };
 
     state = {
-        probingFileName: '- none -',
+        probingFileName: '',
         step: 0,
-        gcodeFileName: '- none -',
+        gcodeFileName: '',
         probingDataSource: 1,
         hideFile: false,
-        probingXmin: 1,
-        probingXmax: 2,
-        probingYmin: 3,
-        probingYmax: 4,
+        probingBbox: {
+            min: {
+                x: 0,
+                y: 0,
+            },
+            max: {
+                x: 0,
+                y: 0,
+            },
+            delta: {
+                x: 0,
+                y: 0,
+            }
+        },
+        origBbox: {
+            min: {
+                x: 0,
+                y: 0,
+            },
+            max: {
+                x: 0,
+                y: 0,
+            },
+            delta: {
+                x: 0,
+                y: 0,
+            }
+        },
         origXmin: 5,
         origXmax: 6,
         origYmin: 7,
@@ -47,10 +72,10 @@ class ApplyAutoLevel extends PureComponent {
     componentDidMount() {
         const { state, actions } = this.props;
 
-        log.info('ApplyAutoLevel componentDidMount');
+        //log.info('ApplyAutoLevel componentDidMount');
         this.probedPoints = state.probingObj;
         //log.info('ApplyAutoLevel componentDidMount probedPoints \n' + JSON.stringify(this.probedPoints));
-        this.updateMinMax();
+        this.updateBbox();
     }
 
     canClick() {
@@ -70,18 +95,42 @@ class ApplyAutoLevel extends PureComponent {
         // log.info('ApplyAutoLevel canClick canClickupload:' + this.state.canClickUpload);
     }
 
-    updateMinMax() {
+    updateBbox() {
         let xArray = this.probedPoints.map((o) => {
             return o.x;
         });
         let yArray = this.probedPoints.map((o) => {
             return o.y;
         });
+        let xmin = Math.min.apply(null, xArray);
+        let xmax = Math.max.apply(null, xArray);
+        let ymin = Math.min.apply(null, yArray);
+        let ymax = Math.max.apply(null, yArray);
+        //log.info('ApplyAutoLevel xmin:' + xmin);
+        log.info('ApplyAutoLevel xmax:' + xmax);
+        xmin = xmin === Infinity ? 0 : xmin;
+        xmax = xmax === -Infinity ? 0 : xmax;
+        ymin = ymin === Infinity ? 0 : ymin;
+        ymax = ymax === -Infinity ? 0 : ymax;
+        let dX = Math.abs(xmax - xmin);
+        let dY = Math.abs(ymax - ymin);
+        //log.info('ApplyAutoLevel xmin:' + xmin);
+        log.info('ApplyAutoLevel xmax:' + xmax);
         this.setState({
-            probingXmin: Math.min.apply(null, xArray),
-            probingXmax: Math.max.apply(null, xArray),
-            probingYmin: Math.min.apply(null, yArray),
-            probingYmax: Math.max.apply(null, yArray)
+            probingBbox: {
+                min: {
+                    x: xmin,
+                    y: ymin,
+                },
+                max: {
+                    x: xmax,
+                    y: ymax,
+                },
+                delta: {
+                    x: dX,
+                    y: dY,
+                }
+            }
         });
     }
 
@@ -143,7 +192,7 @@ class ApplyAutoLevel extends PureComponent {
         //log.info('ApplyAutoLevel readProbingFile probedPoints \n' + JSON.stringify(this.probedPoints));
         //log.info( 'ApplyAutoLevel readProbingFile probedPoints length \n' + this.probedPoints.length);
         //log.info( 'ApplyAutoLevel readProbingFile probedPoints[3].z \n' + this.probedPoints[3].z);
-        this.updateMinMax();
+        this.updateBbox();
         this.canClick();
     }
 
@@ -380,27 +429,28 @@ class ApplyAutoLevel extends PureComponent {
         this.probedPoints = state.probingObj;
         log.info('ApplyAutoLevel handleUseCurrent probedPoints \n' + JSON.stringify(this.probedPoints));
         this.setState({ hideFile: false });
-        this.updateMinMax();
+        this.updateBbox();
         this.canClick();
     }
 
     handleUseFile() {
         this.setState({ hideFile: true });
-        this.setState({ probingFileName: '- none -' });
+        this.setState({ probingFileName: '' });
         this.canClick();
     }
 
     render() {
         const { state, actions } = this.props;
         const {
-            probingDataSource
+            probingDataSource, probingBbox, origBbox
         } = this.state;
         const displayUnits = i18n._('mm');
         const mystyle = this.state.hideFile ? {} : { display: 'none' };
+        const none = '–';
         //log.info('ApplyAutoLevel render:' + JSON.stringify(state));
         //log.info('ApplyAutoLevel render:' + JSON.stringify(state.probingObj));
         //log.info('ApplyAutoLevel render this.gcode  \n' + this.gcode);
-        //this.canClick();
+        // log.info('ApplyAutoLevel render styles.well  \n' + styles.well);
 
         return (
             <Modal disableOverlay size="sm" onClose={actions.closeModal}>
@@ -419,7 +469,6 @@ class ApplyAutoLevel extends PureComponent {
                         multiple={false}
                         onChange={this.handleLoadFile}
                     />
-
                     <div className="form-group">
                         <label><strong>{i18n._('Probing Data:')}</strong></label>
                         <div className="radio" style={{ marginTop: 0 }}>
@@ -436,8 +485,6 @@ class ApplyAutoLevel extends PureComponent {
                                 />
                                 {i18n._('Use current probing data')}
                             </label>
-                        </div>
-                        <div className="radio">
                             <label>
                                 <input
                                     type="radio"
@@ -458,12 +505,14 @@ class ApplyAutoLevel extends PureComponent {
                         >
                             <div style={{ marginLeft: 20 }}>
                                 <div className="col-sm-10">
-                                    <input
-                                        type="url"
-                                        className="form-control"
+                                    <div
+                                        className={styles.well}
+                                        title={this.state.probingFileName}
                                         disabled={true}
-                                        placeholder={this.state.probingFileName}
-                                    />
+                                    >
+                                        {this.state.probingFileName || none}
+                                    </div>
+
                                 </div>
                                 <div className="col-sm-2">
                                     <button
@@ -479,61 +528,40 @@ class ApplyAutoLevel extends PureComponent {
                         </div>
                     </div>
                     <div className="row no-gutters">
-                        <div className="col-xs-3">
-                            <label className="control-label">{i18n._('Xmin')}</label>
-                            <div className="input-group input-group-sm">
-                                <input
-                                    type="text"
-                                    disabled={true}
-                                    className="form-control"
-                                    placeholder={this.state.probingXmin}
-                                />
-                            </div>
-                        </div>
-                        <div className="col-xs-3">
-                            <label className="control-label">{i18n._('Xmax')}</label>
-                            <div className="input-group input-group-sm">
-                                <input
-                                    type="text"
-                                    disabled={true}
-                                    className="form-control"
-                                    placeholder={this.state.probingXmax}
-                                />
-                            </div>
-                        </div>
-                        <div className="col-xs-3">
-                            <label className="control-label">{i18n._('Ymin')}</label>
-                            <div className="input-group input-group-sm">
-                                <input
-                                    type="text"
-                                    disabled={true}
-                                    className="form-control"
-                                    placeholder={this.state.probingYmin}
-                                />
-                            </div>
-                        </div>
-                        <div className="col-xs-3">
-                            <label className="control-label">{i18n._('Ymax')}</label>
-                            <div className="input-group input-group-sm">
-                                <input
-                                    type="text"
-                                    disabled={true}
-                                    className="form-control"
-                                    placeholder={this.state.probingYmax}
-                                />
-                            </div>
+                        <div className={styles['gcode-stats']}>
+                            <table className="table-bordered" data-table="dimension">
+                                <thead>
+                                    <tr>
+                                        <th className={styles.axis}>{i18n._('Axis')}</th>
+                                        <th>{i18n._('Min')}</th>
+                                        <th>{i18n._('Max')}</th>
+                                        <th>{i18n._('Dimension')}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td className={styles.axis}>X</td>
+                                        <td>{probingBbox.min.x} {displayUnits}</td>
+                                        <td>{probingBbox.max.x} {displayUnits}</td>
+                                        <td>{probingBbox.delta.x} {displayUnits}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className={styles.axis}>Y</td>
+                                        <td>{probingBbox.min.y} {displayUnits}</td>
+                                        <td>{probingBbox.max.y} {displayUnits}</td>
+                                        <td>{probingBbox.delta.y} {displayUnits}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                     <label><strong>{i18n._('Original G-Code:')}</strong></label>
                     <div className="row row-no-gutters">
                         <div style={{ marginLeft: 20 }}>
                             <div className="col-sm-10">
-                                <input
-                                    type="url"
-                                    className="form-control"
-                                    disabled={true}
-                                    placeholder={this.state.gcodeFileName}
-                                />
+                                <div className={styles.well} title={this.state.gcodeFileName}>
+                                    {this.state.gcodeFileName || none}
+                                </div>
                             </div>
                             <div className="col-sm-2">
                                 <button
@@ -548,49 +576,31 @@ class ApplyAutoLevel extends PureComponent {
                         </div>
                     </div>
                     <div className="row no-gutters">
-                        <div className="col-xs-3">
-                            <label className="control-label">{i18n._('Xmin')}</label>
-                            <div className="input-group input-group-sm">
-                                <input
-                                    type="text"
-                                    disabled={true}
-                                    className="form-control"
-                                    placeholder={this.state.origXmin}
-                                />
-                            </div>
-                        </div>
-                        <div className="col-xs-3">
-                            <label className="control-label">{i18n._('Xmax')}</label>
-                            <div className="input-group input-group-sm">
-                                <input
-                                    type="text"
-                                    disabled={true}
-                                    className="form-control"
-                                    placeholder={this.state.origXmax}
-                                />
-                            </div>
-                        </div>
-                        <div className="col-xs-3">
-                            <label className="control-label">{i18n._('Ymin')}</label>
-                            <div className="input-group input-group-sm">
-                                <input
-                                    type="text"
-                                    disabled={true}
-                                    className="form-control"
-                                    placeholder={this.state.origYmin}
-                                />
-                            </div>
-                        </div>
-                        <div className="col-xs-3">
-                            <label className="control-label">{i18n._('Ymax')}</label>
-                            <div className="input-group input-group-sm">
-                                <input
-                                    type="text"
-                                    disabled={true}
-                                    className="form-control"
-                                    placeholder={this.state.origYmax}
-                                />
-                            </div>
+                        <div className={styles['gcode-stats']}>
+                            <table className="table-bordered" data-table="dimension">
+                                <thead>
+                                    <tr>
+                                        <th className={styles.axis}>{i18n._('Axis')}</th>
+                                        <th>{i18n._('Min')}</th>
+                                        <th>{i18n._('Max')}</th>
+                                        <th>{i18n._('Dimension')}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td className={styles.axis}>X</td>
+                                        <td>{origBbox.min.x} {displayUnits}</td>
+                                        <td>{origBbox.max.x} {displayUnits}</td>
+                                        <td>{origBbox.delta.x} {displayUnits}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className={styles.axis}>Y</td>
+                                        <td>{origBbox.min.y} {displayUnits}</td>
+                                        <td>{origBbox.max.y} {displayUnits}</td>
+                                        <td>{origBbox.delta.y} {displayUnits}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </Modal.Body>
