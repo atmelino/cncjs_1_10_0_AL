@@ -89,23 +89,17 @@ class AutoLevel extends PureComponent {
 
         return (
             <div>
-                <div className="form-group">
-                    <div className="row no-gutters">
-                        <div>
-                            <ReactTable
-                                data={state.probingObj}
-                                columns={probingColumns}
-                                defaultPageSize={10}
-                            />
-                        </div>
-                        <div>
-                            <button onClick={actions.clearGrid}>Clear</button>
-                            <button onClick={actions.handleClickSave}>Save</button>
-                        </div>
+                <div className="row no-gutters">
+                    <div>
+                        <ReactTable
+                            data={state.probingObj}
+                            columns={probingColumns}
+                            defaultPageSize={10}
+                        />
                     </div>
                 </div>
                 <div className="row no-gutters">
-                    <div className="col-sm-6">
+                    <div className="col-sm-3">
                         <button
                             type="button"
                             className="btn btn-sm btn-default"
@@ -114,10 +108,30 @@ class AutoLevel extends PureComponent {
                             }}
                             disabled={false}
                         >
-                            Probing Setup
+                            Setup
                         </button>
                     </div>
-                    <div className="col-sm-6">
+                    <div className="col-sm-3">
+                        <button
+                            type="button"
+                            className="btn btn-sm btn-default"
+                            onClick={actions.clearGrid}
+                            disabled={false}
+                        >
+                            Clear
+                        </button>
+                    </div>
+                    <div className="col-sm-3">
+                        <button
+                            type="button"
+                            className="btn btn-sm btn-default"
+                            onClick={actions.handleClickSave}
+                            disabled={false}
+                        >
+                            Save
+                        </button>
+                    </div>
+                    <div className="col-sm-3">
                         <button
                             type="button"
                             className="btn btn-sm btn-default"
@@ -126,7 +140,7 @@ class AutoLevel extends PureComponent {
                             }}
                             disabled={false}
                         >
-                            Apply Autolevel
+                            Apply
                         </button>
                     </div>
                 </div>
